@@ -6,7 +6,7 @@ from helpers import prohibited, prohibitedClass, stringInput, toInclude
 deltaName = input('Ievadi nosaukumu .csv failam ar zāļu reģistra izmaiņām: ')
 separator = input('Ievadi, kāds simbols atdala ierakstus .csv failā: ')
 productsDeltaName = []
-with open(deltaName) as delta:
+with open(deltaName, encoding='utf-8') as delta:
     for line in delta:
         line.strip
         if line.startswith('Datums'):
@@ -19,7 +19,7 @@ drugRegisterName = input('Ja failu ar zāļu reģistra atvērtajiem datiem sauc 
                          'Ja failam ir cits nosaukums, ievadi to: ')
 if len(drugRegisterName) < 1:
     drugRegisterName = 'HumanProducts.xml'
-with open(drugRegisterName)as drugRegister:
+with open(drugRegisterName, encoding='utf-8')as drugRegister:
     allStuff = ET.parse(drugRegister)
 products = allStuff.findall('products/product')
 
@@ -77,6 +77,6 @@ for productDeltaName in productsDeltaName:
                 l=sports_in_competition_en,
                 m=sports_out_competition_en)
 
-            with open(dataZVAName, 'a') as dataZVA:
+            with open(dataZVAName, 'a', encoding='utf-8') as dataZVA:
                 dataZVA.write(text)
             print('Failam pievienota šāda rinda:\n' + text)
