@@ -6,7 +6,7 @@ from helpers import prohibited, prohibitedClass, stringInput, toInclude
 deltaName = input('Ievadi nosaukumu .csv failam ar zāļu reģistra izmaiņām: ')
 separator = input('Ievadi, kāds simbols atdala ierakstus .csv failā: ')
 productsDeltaName = []
-with open(deltaName, encoding='utf-8') as delta:
+with open(deltaName, encoding='utf-8-sig') as delta:
     for line in delta:
         line.strip
         if line.startswith('Datums'):
