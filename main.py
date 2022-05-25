@@ -9,7 +9,7 @@ productsDeltaName = []
 with open(deltaName, encoding='utf-8') as delta:
     for line in delta:
         line.strip
-        if line.startswith('Datums'):
+        if line.startswith('Datums') or line.startswith('\ufeffDatums'):
             continue
         product = line.split(separator)
         productsDeltaName.append(product[1])
