@@ -29,8 +29,12 @@ date = input('Ievadi šodienas datumu šādā formātā - YYYYMMDD: ')
 dataZVAName = date + '_antidopinga_vielas.csv'
 shutil.copyfile(dataZVANameOld, dataZVAName)
 
+productsDeltaNameChecked = []
+
 for productDeltaName in productsDeltaName:
     for product in products:
+        if productDeltaName in productsDeltaNameChecked:
+            continue
         nr = product.findtext('authorisation_no')
         if productDeltaName == nr:
             medicine_name = product.findtext('medicine_name')
@@ -42,6 +46,7 @@ for productDeltaName in productsDeltaName:
             print(pharmaceutical_form_lv)
             toIncludeStr = toInclude(INCLUDE_PROMPT, INCLUDE_ERROR)
             if toIncludeStr == NO:
+                productsDeltaNameChecked.append(productDeltaName)
                 continue
             prohibited_out_competition = prohibited(
                 PROHIBITED_OUT_PROMPT, PROHIBITED_ERROR)
@@ -51,7 +56,7 @@ for productDeltaName in productsDeltaName:
                 PROHIBITED_CLASS_PROMPT, PROHIBITED_CLASS_ERROR)
             notes_lv = stringInput(NOTES_PROMPT)
             notes_en = stringInput(NOTES_PROMPT_EN)
-            if prohibited_class == 'P1':
+            if 'P1' in prohibited_class:
                 sports_in_competition_lv = P1['sports_in_competition_lv']
                 sports_in_competition_en = P1['sports_in_competition_en']
                 sports_out_competition_lv = P1['sports_out_competition_lv']
@@ -80,3 +85,4 @@ for productDeltaName in productsDeltaName:
             with open(dataZVAName, 'a', encoding='utf-8') as dataZVA:
                 dataZVA.write(text)
             print('Failam pievienota šāda rinda:\n' + text)
+            productsDeltaNameChecked.append(productDeltaName)
