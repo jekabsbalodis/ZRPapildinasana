@@ -1,3 +1,4 @@
+import sqlite3
 import xml.etree.ElementTree as ET
 import shutil
 import csv
@@ -6,6 +7,9 @@ from tqdm import tqdm
 import sys
 from Constants import INCLUDE_ERROR, INCLUDE_PROMPT, NO, NOTES_PROMPT, NOTES_PROMPT_EN, P1, PROHIBITED_CLASS_ERROR, PROHIBITED_CLASS_PROMPT, PROHIBITED_ERROR, PROHIBITED_IN_PROMPT, PROHIBITED_OUT_PROMPT
 from helpers import prohibited, prohibitedClass, stringInput, toInclude
+
+conn = sqlite3.connect('piezimju lauki.sqlite')
+cur = conn.cursor()
 
 deltaName = input('Ievadi nosaukumu .csv failam ar zāļu reģistra izmaiņām: ')
 separator = input(
@@ -48,10 +52,18 @@ for productDeltaName in productsDeltaName:
             continue
         nr = product.findtext('authorisation_no')
         if productDeltaName == nr:
+            atcCode = product.findtext('atc_code')
             medicine_name = product.findtext('medicine_name')
             authorisation_no = product.findtext('authorisation_no')
             pharmaceutical_form_lv = product.findtext('pharmaceutical_form_lv')
             active_substance = product.findtext('active_substance')
+            cur.execute(
+                'SELECT atc_code FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+            checkAtcCode = cur.fetchone()
+            if checkAtcCode:
+                print('Līdzīgs medikaments jau iepriekš ir iekļauts')
+            else:
+                print('Šāds medikaments iepriekš nav ticis iekļauts')
             print(authorisation_no)
             print(active_substance)
             print(pharmaceutical_form_lv)
@@ -59,25 +71,34 @@ for productDeltaName in productsDeltaName:
             if toIncludeStr == NO:
                 productsDeltaNameChecked.append(productDeltaName)
                 continue
-            prohibited_out_competition = prohibited(
-                PROHIBITED_OUT_PROMPT, PROHIBITED_ERROR)
-            prohibited_in_competition = prohibited(
-                PROHIBITED_IN_PROMPT, PROHIBITED_ERROR)
-            prohibited_class = prohibitedClass(
-                PROHIBITED_CLASS_PROMPT, PROHIBITED_CLASS_ERROR)
-            notes_lv = stringInput(NOTES_PROMPT)
-            notes_en = stringInput(NOTES_PROMPT_EN)
-            if 'P1' in prohibited_class:
-                sports_in_competition_lv = P1['sports_in_competition_lv']
-                sports_in_competition_en = P1['sports_in_competition_en']
-                sports_out_competition_lv = P1['sports_out_competition_lv']
-                sports_out_competition_en = P1['sports_out_competition_en']
-            else:
-                sports_in_competition_lv = ''
-                sports_in_competition_en = ''
-                sports_out_competition_lv = ''
-                sports_out_competition_en = ''
-
+            if checkAtcCode:
+                cur.execute(
+                    'SELECT prohibited FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                prohibited_out_competition = str(cur.fetchone()).lstrip('(\'').rstrip('\',)')
+                cur.execute(
+                    'SELECT prohibited_comp FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                prohibited_in_competition = cur.fetchone()
+                cur.execute(
+                    'SELECT prohibited_class FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                prohibited_class = cur.fetchone()
+                cur.execute(
+                    'SELECT notes FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                notes_lv = cur.fetchone()
+                cur.execute(
+                    'SELECT prohibited_sports FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                sports_in_competition_lv = cur.fetchone()
+                cur.execute(
+                    'SELECT prohibited_comp_sports FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                sports_out_competition_lv = cur.fetchone()
+                cur.execute(
+                    'SELECT notes_en FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                notes_en = cur.fetchone()
+                cur.execute(
+                    'SELECT prohibited_sports_en FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                sports_in_competition_en = cur.fetchone()
+                cur.execute(
+                    'SELECT prohibited_comp_sports_en FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
+                sports_out_competition_en = cur.fetchone()
             text = '\"{a}\",\"{b}\",\"{c}\",\"{d}\",\"{e}\",\"{f}\",\"{g}\",\"{h}\",\"{i}\",\"{j}\",\"{k}\",\"{l}\",\"{m}\"\n'.format(
                 a=medicine_name,
                 b=authorisation_no,
@@ -93,7 +114,7 @@ for productDeltaName in productsDeltaName:
                 l=sports_in_competition_en,
                 m=sports_out_competition_en)
 
-            with open(dataZVAName, 'a', encoding='utf-8') as dataZVA:
-                dataZVA.write(text)
-            print('Failam pievienota šāda rinda:\n' + text)
+            # with open(dataZVAName, 'a', encoding='utf-8') as dataZVA:
+            #     dataZVA.write(text)
+            print('Failam tiks pievienota šāda rinda:\n' + text)
             productsDeltaNameChecked.append(productDeltaName)
