@@ -1,24 +1,35 @@
 import xml.etree.ElementTree as ET
 import shutil
+import csv
+import requests
+from tqdm import tqdm
+import sys
 from Constants import INCLUDE_ERROR, INCLUDE_PROMPT, NO, NOTES_PROMPT, NOTES_PROMPT_EN, P1, PROHIBITED_CLASS_ERROR, PROHIBITED_CLASS_PROMPT, PROHIBITED_ERROR, PROHIBITED_IN_PROMPT, PROHIBITED_OUT_PROMPT
 from helpers import prohibited, prohibitedClass, stringInput, toInclude
 
 deltaName = input('Ievadi nosaukumu .csv failam ar zāļu reģistra izmaiņām: ')
-separator = input('Ievadi, kāds simbols atdala ierakstus .csv failā: ')
+separator = input(
+    '\n-----\nIevadi, kāds simbols atdala ierakstus .csv failā: ')
 productsDeltaName = []
 with open(deltaName, encoding='utf-8') as delta:
-    for line in delta:
-        line.strip
-        if line.startswith('Datums') or line.startswith('\ufeffDatums'):
-            continue
-        product = line.split(separator)
-        productsDeltaName.append(product[1])
-    print(productsDeltaName)
+    csvreader = csv.reader(delta, dialect='excel', delimiter=separator)
+    for line in csvreader:
+        productsDeltaName.append(line[1])
+print(productsDeltaName)
 
-drugRegisterName = input('Ja failu ar zāļu reģistra atvērtajiem datiem sauc HumanProducts.xml, spied Enter\n'
-                         'Ja failam ir cits nosaukums, ievadi to: ')
-if len(drugRegisterName) < 1:
-    drugRegisterName = 'HumanProducts.xml'
+url = 'https://dati.zva.gov.lv/zalu-registrs/export/HumanProducts.xml'
+with requests.get(url, stream=True) as r:
+    totalLength = int(requests.head(url).headers["Content-Length"])
+    with open('HumanProducts.xml', 'wb') as HumanProducts:
+        with tqdm(unit_scale=True,
+                  unit_divisor=1024,
+                  total=totalLength,
+                  file=sys.stdout,
+                  desc='HumanProducts.xml') as progress:
+            for chunk in r.iter_content(chunk_size=1024):
+                datasize = HumanProducts.write(chunk)
+                progress.update(datasize)
+drugRegisterName = 'HumanProducts.xml'
 with open(drugRegisterName, encoding='utf-8')as drugRegister:
     allStuff = ET.parse(drugRegister)
 products = allStuff.findall('products/product')
