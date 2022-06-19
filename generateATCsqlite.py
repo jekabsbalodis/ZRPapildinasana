@@ -112,7 +112,8 @@ with open('20220509_antidopinga_vielas.csv', encoding='utf-8', newline='') as za
                 prohibitedClassID = cur.fetchone()[0]
                 cur.execute(
                     'INSERT OR IGNORE INTO Notes (notes) VALUES (?)', (line[7],))
-                cur.execute('SELECT id FROM Notes WHERE notes = ?', (line[7],))
+                cur.execute(
+                    'SELECT id FROM Notes WHERE notes = ?', (line[7],))
                 notesID = cur.fetchone()[0]
                 cur.execute(
                     'INSERT OR IGNORE INTO Prohibited_sports (prohibited_sports) VALUES (?)', (line[8],))
@@ -140,11 +141,12 @@ with open('20220509_antidopinga_vielas.csv', encoding='utf-8', newline='') as za
                 cur.execute(
                     'SELECT id FROM Prohibited_comp_sports_en WHERE prohibited_comp_sports_en = ?', (line[12],))
                 prohibitedCompSportsEnID = cur.fetchone()[0]
-                cur.execute('''INSERT OR IGNORE INTO Piezimju_lauki (atc_code, prohibited_id, prohibited_comp_id,
-                prohibited_class_id, notes_id, prohibited_sports_id, prohibited_comp_sports_id, notes_en_id,
-                prohibited_sports_en_id, prohibited_comp_sports_en_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', (
-                    atcCode, prohibitedID, prohibitedCompID, prohibitedClassID, notesID, prohibitedSportsID,
-                    prohibitedCompSportsID, notesEnID, prohibitedSportsEnID, prohibitedCompSportsEnID))
+                cur.execute(
+                    '''INSERT OR IGNORE INTO Piezimju_lauki (atc_code, prohibited_id, prohibited_comp_id,
+                    prohibited_class_id, notes_id, prohibited_sports_id, prohibited_comp_sports_id, notes_en_id,
+                    prohibited_sports_en_id, prohibited_comp_sports_en_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                    (atcCode, prohibitedID, prohibitedCompID, prohibitedClassID, notesID, prohibitedSportsID,
+                     prohibitedCompSportsID, notesEnID, prohibitedSportsEnID, prohibitedCompSportsEnID))
                 lineChecked.append(line[1])
                 atcCodeChecked.append(atcCode)
                 i += 1
