@@ -15,7 +15,7 @@ deltaName = input('Ievadi nosaukumu .csv failam ar zāļu reģistra izmaiņām: 
 separator = input(
     '\n-----\nIevadi, kāds simbols atdala ierakstus .csv failā: ')
 productsDeltaName = []
-with open(deltaName, encoding='utf-8') as delta:
+with open(deltaName, encoding='utf-8', newline='') as delta:
     csvreader = csv.reader(delta, dialect='excel', delimiter=separator)
     for line in csvreader:
         productsDeltaName.append(line[1])
@@ -58,8 +58,8 @@ for productDeltaName in productsDeltaName:
             pharmaceutical_form_lv = product.findtext('pharmaceutical_form_lv')
             active_substance = product.findtext('active_substance')
             cur.execute(
-                'SELECT atc_code FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-            checkAtcCode = cur.fetchone()
+                'SELECT EXISTS (SELECT atc_code FROM Piezimju_lauki WHERE atc_code = ? )', (atcCode,))
+            checkAtcCode = cur.fetchone()[0]
             if checkAtcCode:
                 print('Līdzīgs medikaments jau iepriekš ir iekļauts')
             else:
@@ -73,48 +73,134 @@ for productDeltaName in productsDeltaName:
                 continue
             if checkAtcCode:
                 cur.execute(
-                    'SELECT prohibited FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                prohibited_out_competition = str(cur.fetchone()).lstrip('(\'').rstrip('\',)')
+                    '''SELECT prohibited FROM Piezimju_lauki
+                    JOIN prohibited ON Prohibited.id = Piezimju_lauki.prohibited_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                prohibited_out_competition = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT prohibited_comp FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                prohibited_in_competition = cur.fetchone()
+                    '''SELECT prohibited_comp FROM Piezimju_lauki
+                    JOIN prohibited_comp ON Prohibited_comp.id = Piezimju_lauki.prohibited_comp_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                prohibited_in_competition = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT prohibited_class FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                prohibited_class = cur.fetchone()
+                    '''SELECT prohibited_class FROM Piezimju_lauki
+                    JOIN prohibited_class ON Prohibited_class.id = Piezimju_lauki.prohibited_class_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                prohibited_class = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT notes FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                notes_lv = cur.fetchone()
+                    '''SELECT notes FROM Piezimju_lauki
+                    JOIN notes ON Notes.id = Piezimju_lauki.notes_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                notes_lv = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT prohibited_sports FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                sports_in_competition_lv = cur.fetchone()
+                    '''SELECT prohibited_sports FROM Piezimju_lauki
+                    JOIN prohibited_sports ON Prohibited_sports.id = Piezimju_lauki.prohibited_sports_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                sports_in_competition_lv = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT prohibited_comp_sports FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                sports_out_competition_lv = cur.fetchone()
+                    '''SELECT prohibited_comp_sports FROM Piezimju_lauki
+                    JOIN prohibited_comp_sports ON Prohibited_comp_sports.id = Piezimju_lauki.prohibited_comp_sports_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                sports_out_competition_lv = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT notes_en FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                notes_en = cur.fetchone()
+                    '''SELECT notes_en FROM Piezimju_lauki
+                    JOIN notes_en ON Notes_en.id = Piezimju_lauki.notes_en_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                notes_en = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT prohibited_sports_en FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                sports_in_competition_en = cur.fetchone()
+                    '''SELECT prohibited_sports_en FROM Piezimju_lauki
+                    JOIN prohibited_sports_en ON Prohibited_sports_en.id = Piezimju_lauki.prohibited_sports_en_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                sports_in_competition_en = cur.fetchone()[0]
                 cur.execute(
-                    'SELECT prohibited_comp_sports_en FROM Piezimju_lauki WHERE atc_code = ? ', (atcCode,))
-                sports_out_competition_en = cur.fetchone()
-            text = '\"{a}\",\"{b}\",\"{c}\",\"{d}\",\"{e}\",\"{f}\",\"{g}\",\"{h}\",\"{i}\",\"{j}\",\"{k}\",\"{l}\",\"{m}\"\n'.format(
-                a=medicine_name,
-                b=authorisation_no,
-                c=pharmaceutical_form_lv,
-                d=active_substance,
-                e=prohibited_out_competition,
-                f=prohibited_in_competition,
-                g=prohibited_class,
-                h=notes_lv,
-                i=sports_in_competition_lv,
-                j=sports_out_competition_lv,
-                k=notes_en,
-                l=sports_in_competition_en,
-                m=sports_out_competition_en)
+                    '''SELECT prohibited_comp_sports_en FROM Piezimju_lauki
+                    JOIN prohibited_comp_sports_en ON Prohibited_comp_sports_en.id =
+                                                                            Piezimju_lauki.prohibited_comp_sports_en_id
+                    WHERE atc_code = ? ''', (atcCode,))
+                sports_out_competition_en = cur.fetchone()[0]
 
-            # with open(dataZVAName, 'a', encoding='utf-8') as dataZVA:
-            #     dataZVA.write(text)
-            print('Failam tiks pievienota šāda rinda:\n' + text)
-            productsDeltaNameChecked.append(productDeltaName)
+                text = '''{a}\n{b}\n{c}\n{d}\n{e}\n{f}\n{g}\n{h}\n{i}\n{j}\n{k}\n{l}\n{m}\n'''.format(
+                    a=medicine_name,
+                    b=authorisation_no,
+                    c=pharmaceutical_form_lv,
+                    d=active_substance,
+                    e=prohibited_out_competition,
+                    f=prohibited_in_competition,
+                    g=prohibited_class,
+                    h=notes_lv,
+                    i=sports_in_competition_lv,
+                    j=sports_out_competition_lv,
+                    k=notes_en,
+                    l=sports_in_competition_en,
+                    m=sports_out_competition_en)
+                print('Failam tiks pievienota rinda ar šādiem laukiem:\n' + text)
+
+                with open(dataZVAName, 'a', encoding='utf-8', newline='') as dataZVA:
+                    csvwriter = csv.writer(
+                        dataZVA, dialect='excel', delimiter=',')
+                    csvwriter.writerow([medicine_name,
+                                        authorisation_no,
+                                        pharmaceutical_form_lv,
+                                        active_substance,
+                                        prohibited_out_competition,
+                                        prohibited_in_competition,
+                                        prohibited_class,
+                                        notes_lv,
+                                        sports_in_competition_lv,
+                                        sports_out_competition_lv,
+                                        notes_en,
+                                        sports_in_competition_en,
+                                        sports_out_competition_en])
+                productsDeltaNameChecked.append(productDeltaName)
+            else:
+                prohibited_out_competition = prohibited(
+                    PROHIBITED_IN_PROMPT, PROHIBITED_ERROR)
+                prohibited_in_competition = prohibited(
+                    PROHIBITED_OUT_PROMPT, PROHIBITED_ERROR)
+                prohibited_class = prohibitedClass(
+                    PROHIBITED_CLASS_PROMPT, PROHIBITED_CLASS_ERROR)
+                notes_lv = stringInput(NOTES_PROMPT)
+                notes_en = stringInput(NOTES_PROMPT_EN)
+                if 'P1' in prohibited_class:
+                    sports_in_competition_lv = P1['sports_in_competition_lv']
+                    sports_in_competition_en = P1['sports_in_competition_en']
+                    sports_out_competition_lv = P1['sports_out_competition_lv']
+                    sports_out_competition_en = P1['sports_out_competition_en']
+                else:
+                    sports_in_competition_lv = ''
+                    sports_in_competition_en = ''
+                    sports_out_competition_lv = ''
+                    sports_out_competition_en = ''
+                text = '''{a}\n{b}\n{c}\n{d}\n{e}\n{f}\n{g}\n{h}\n{i}\n{j}\n{k}\n{l}\n{m}\n'''.format(
+                    a=medicine_name,
+                    b=authorisation_no,
+                    c=pharmaceutical_form_lv,
+                    d=active_substance,
+                    e=prohibited_out_competition,
+                    f=prohibited_in_competition,
+                    g=prohibited_class,
+                    h=notes_lv,
+                    i=sports_in_competition_lv,
+                    j=sports_out_competition_lv,
+                    k=notes_en,
+                    l=sports_in_competition_en,
+                    m=sports_out_competition_en)
+                print('Failam tiks pievienota rinda ar šādiem laukiem:\n' + text)
+
+                with open(dataZVAName, 'a', encoding='utf-8', newline='') as dataZVA:
+                    csvwriter = csv.writer(
+                        dataZVA, dialect='excel', delimiter=',')
+                    csvwriter.writerow([medicine_name,
+                                        authorisation_no,
+                                        pharmaceutical_form_lv,
+                                        active_substance,
+                                        prohibited_out_competition,
+                                        prohibited_in_competition,
+                                        prohibited_class,
+                                        notes_lv,
+                                        sports_in_competition_lv,
+                                        sports_out_competition_lv,
+                                        notes_en,
+                                        sports_in_competition_en,
+                                        sports_out_competition_en])
+                productsDeltaNameChecked.append(productDeltaName)
