@@ -1,4 +1,3 @@
-# tests
 import sqlite3
 import xml.etree.ElementTree as ET
 import shutil
