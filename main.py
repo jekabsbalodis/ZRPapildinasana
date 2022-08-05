@@ -5,21 +5,25 @@ import csv
 import requests
 from tqdm import tqdm
 import sys
-from Constants import INCLUDE_ERROR, INCLUDE_PROMPT, NO, NOTES_PROMPT, NOTES_PROMPT_EN, P1, PROHIBITED_CLASS_ERROR, PROHIBITED_CLASS_PROMPT, PROHIBITED_ERROR, PROHIBITED_IN_PROMPT, PROHIBITED_OUT_PROMPT
+from Constants import DELTA_DATE_FROM_PROMPT, INCLUDE_ERROR, INCLUDE_PROMPT, NO, NOTES_PROMPT, NOTES_PROMPT_EN, P1, PROHIBITED_CLASS_ERROR, PROHIBITED_CLASS_PROMPT, PROHIBITED_ERROR, PROHIBITED_IN_PROMPT, PROHIBITED_OUT_PROMPT
 from helpers import prohibited, prohibitedClass, stringInput, toInclude
 
 conn = sqlite3.connect('piezimju lauki.sqlite')
 cur = conn.cursor()
 
-deltaName = input('Ievadi nosaukumu .csv failam ar zāļu reģistra izmaiņām: ')
-separator = input(
-    '\n-----\nIevadi, kāds simbols atdala ierakstus .csv failā: ')
-productsDeltaName = []
-with open(deltaName, encoding='utf-8', newline='') as delta:
-    csvreader = csv.reader(delta, dialect='excel', delimiter=separator)
-    for line in csvreader:
-        productsDeltaName.append(line[1])
-print(productsDeltaName)
+deltaDateFrom = stringInput(DELTA_DATE_FROM_PROMPT)
+deltaUrl = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + deltaDateFrom
+
+with requests.get(deltaUrl,) as r:
+    with open('delta.xml', 'wb') as delta:
+        delta.write(r.content)
+deltaFile = 'delta.xml'
+with open(deltaFile, encoding='utf-8')as deltaRegister:
+    allStuffDelta = ET.parse(deltaRegister)
+productsDeltaName = allStuffDelta.findall('meds/med')
+for productDelta in productsDeltaName:
+    name = productDelta.findtext('med_name')
+    print(name)
 
 url = 'https://dati.zva.gov.lv/zalu-registrs/export/HumanProducts.xml'
 with requests.get(url, stream=True) as r:
@@ -45,7 +49,7 @@ dataZVAName = date + '_antidopinga_vielas.csv'
 shutil.copyfile(dataZVANameOld, dataZVAName)
 
 productsDeltaNameChecked = []
-
+# TODO Sakārtot produktu pārskatīšanu
 for productDeltaName in productsDeltaName:
     for product in products:
         if productDeltaName in productsDeltaNameChecked:

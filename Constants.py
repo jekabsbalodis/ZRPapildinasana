@@ -5,6 +5,8 @@ PROHIBITED_OUT_PROMPT = 'Vai medikamentu aizliegts lietot sacensībās un ārpus
 PROHIBITED_IN_PROMPT = 'Vai medikamentu aizliegts lietot sacensību laikā (\"Jā\"/\"Nē\"/\"Jā*\"/\"Ar nosacījumu\")? '
 PROHIBITED_ERROR = 'Lūdzu ievadi tikai \"Jā\", \"Nē\", \"Jā*\" vai \"Ar nosacījumu\"!'
 
+DELTA_DATE_FROM_PROMPT = 'Ievadi datumu, no kura kura vēlies redzēt pievienotos medikamentus (\"Formāts YYYY-MM-DD\") '
+
 YES = 'Jā'
 YES_FOR_SOME_SPORTS = 'Jā*'
 YES_WITH_EXCEPTIONS = 'Ar nosacījumu'
