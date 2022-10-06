@@ -5,21 +5,25 @@ import csv
 import requests
 from tqdm import tqdm
 import sys
-from Constants import INCLUDE_ERROR, INCLUDE_PROMPT, NO, NOTES_PROMPT, NOTES_PROMPT_EN, P1, PROHIBITED_CLASS_ERROR, PROHIBITED_CLASS_PROMPT, PROHIBITED_ERROR, PROHIBITED_IN_PROMPT, PROHIBITED_OUT_PROMPT
+from Constants import DELTA_DATE_FROM_PROMPT, INCLUDE_ERROR, INCLUDE_PROMPT, NO, NOTES_PROMPT, NOTES_PROMPT_EN, P1, PROHIBITED_CLASS_ERROR, PROHIBITED_CLASS_PROMPT, PROHIBITED_ERROR, PROHIBITED_IN_PROMPT, PROHIBITED_OUT_PROMPT
 from helpers import prohibited, prohibitedClass, stringInput, toInclude
 
 conn = sqlite3.connect('piezimju lauki.sqlite')
 cur = conn.cursor()
 
-deltaName = input('Ievadi nosaukumu .csv failam ar zāļu reģistra izmaiņām: ')
-separator = input(
-    '\n-----\nIevadi, kāds simbols atdala ierakstus .csv failā: ')
-productsDeltaName = []
-with open(deltaName, encoding='utf-8', newline='') as delta:
-    csvreader = csv.reader(delta, dialect='excel', delimiter=separator)
-    for line in csvreader:
-        productsDeltaName.append(line[1])
-print(productsDeltaName)
+deltaDateFrom = stringInput(DELTA_DATE_FROM_PROMPT)
+deltaUrl = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + deltaDateFrom
+
+with requests.get(deltaUrl,) as r:
+    with open('delta.xml', 'wb') as delta:
+        delta.write(r.content)
+deltaFile = 'delta.xml'
+with open(deltaFile, encoding='utf-8')as deltaRegister:
+    allStuffDelta = ET.parse(deltaRegister)
+productsDelta = allStuffDelta.findall('meds/med')
+for productDelta in productsDelta:
+    name = productDelta.findtext('med_name')
+    print(name)
 
 url = 'https://dati.zva.gov.lv/zalu-registrs/export/HumanProducts.xml'
 with requests.get(url, stream=True) as r:
@@ -33,8 +37,8 @@ with requests.get(url, stream=True) as r:
             for chunk in r.iter_content(chunk_size=1024):
                 datasize = HumanProducts.write(chunk)
                 progress.update(datasize)
-drugRegisterName = 'HumanProducts.xml'
-with open(drugRegisterName, encoding='utf-8')as drugRegister:
+drugRegister = 'HumanProducts.xml'
+with open(drugRegister, encoding='utf-8')as drugRegister:
     allStuff = ET.parse(drugRegister)
 products = allStuff.findall('products/product')
 
@@ -44,14 +48,15 @@ date = input('Ievadi šodienas datumu šādā formātā - YYYYMMDD: ')
 dataZVAName = date + '_antidopinga_vielas.csv'
 shutil.copyfile(dataZVANameOld, dataZVAName)
 
-productsDeltaNameChecked = []
-
-for productDeltaName in productsDeltaName:
+productsDeltaChecked = []
+i = 0
+for productDelta in productsDelta:
+    deltaNr = productDelta.findtext('reg_number')
     for product in products:
-        if productDeltaName in productsDeltaNameChecked:
+        if deltaNr in productsDeltaChecked:
             continue
         nr = product.findtext('authorisation_no')
-        if productDeltaName == nr:
+        if deltaNr == nr:
             atcCode = product.findtext('atc_code')
             medicine_name = product.findtext('medicine_name')
             authorisation_no = product.findtext('authorisation_no')
@@ -69,7 +74,7 @@ for productDeltaName in productsDeltaName:
             print(pharmaceutical_form_lv)
             toIncludeStr = toInclude(INCLUDE_PROMPT, INCLUDE_ERROR)
             if toIncludeStr == NO:
-                productsDeltaNameChecked.append(productDeltaName)
+                productsDeltaChecked.append(deltaNr)
                 continue
             if checkAtcCode:
                 cur.execute(
@@ -151,7 +156,7 @@ for productDeltaName in productsDeltaName:
                                         notes_en,
                                         sports_in_competition_en,
                                         sports_out_competition_en])
-                productsDeltaNameChecked.append(productDeltaName)
+                productsDeltaChecked.append(deltaNr)
             else:
                 prohibited_out_competition = prohibited(
                     PROHIBITED_IN_PROMPT, PROHIBITED_ERROR)
@@ -203,4 +208,10 @@ for productDeltaName in productsDeltaName:
                                         notes_en,
                                         sports_in_competition_en,
                                         sports_out_competition_en])
-                productsDeltaNameChecked.append(productDeltaName)
+                productsDeltaChecked.append(deltaNr)
+    i += 1
+    if i == 100:
+        conn.commit()
+        i = 0
+conn.commit()
+conn.close()
