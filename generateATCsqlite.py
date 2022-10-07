@@ -82,7 +82,9 @@ products = allStuff.findall('products/product')
 lineChecked = []
 atcCodeChecked = []
 i = 0
-with open('20220509_antidopinga_vielas.csv', encoding='utf-8', newline='') as zaluRegistrs:
+data = input(
+    'Ievadi faila nosaukumu: ')
+with open(data, encoding='utf-8', newline='') as zaluRegistrs:
     csvreader = csv.reader(zaluRegistrs, dialect='excel', delimiter=',')
     for line in csvreader:
         if line[1] == 'authorisation_no':
