@@ -7,6 +7,15 @@ PROHIBITED_ERROR = 'Lūdzu ievadi tikai \"Jā\", \"Nē\", \"Jā*\" vai \"Ar nosa
 
 DELTA_DATE_FROM_PROMPT = 'Ievadi datumu, no kura kura vēlies redzēt pievienotos medikamentus (\"Formāts YYYY-MM-DD\") '
 
+USERNAME_PROMPT = 'Ievadi lietotāja vārdu! '
+PASSWORD_PROMPT = 'Ievadi paroli! '
+FTP_PROMPT = 'Ievadi servera adresi! '
+FTP_PORT_PROMPT = 'Ievadi servera portu! '
+FTP_PORT_PROMPT_ERROR = 'Lūdzu ievadi skaitļus'
+RESOURCE_ID_PROMPT = 'Ievadi resursa ID numuru! '
+API_PROMPT = 'Ievadi data.gov.lv API atslēgu! '
+FILE_NAME_PROMPT = 'Ievadi nosaukumu failam, kuru augšupielādēt! '
+
 YES = 'Jā'
 YES_FOR_SOME_SPORTS = 'Jā*'
 YES_WITH_EXCEPTIONS = 'Ar nosacījumu'

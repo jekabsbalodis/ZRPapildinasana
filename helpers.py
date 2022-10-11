@@ -6,6 +6,15 @@ def stringInput(message):
     return userInput
 
 
+def intInput(message, errorMessage):
+    try:
+        userInput = int(input(message))
+        return userInput
+    except ValueError:
+        print(errorMessage)
+        return intInput(message, errorMessage)
+
+
 def prohibited(message, errorMessage):
     userInput = input(message)
     if userInput == YES:
