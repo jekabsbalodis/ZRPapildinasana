@@ -52,6 +52,11 @@ productsDeltaChecked = []
 i = 0
 for productDelta in productsDelta:
     deltaNr = productDelta.findtext('reg_number')
+    with open(dataZVAName, 'r') as dataZVA:
+        content = dataZVA.read()
+        if deltaNr in content:
+            print(deltaNr, ' ir jau saglabāts.')
+            continue
     for product in products:
         if deltaNr in productsDeltaChecked:
             continue
