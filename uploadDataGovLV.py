@@ -7,6 +7,8 @@ resourceID = stringInput(RESOURCE_ID_PROMPT)
 apiKey = getpass(API_PROMPT)
 fileName = stringInput(FILE_NAME_PROMPT)
 
+# TODO atspoguļot informāciju par laiku, kad pēdējo reizi atjaunoti dati
+# TODO atspoguļot informāciju, ka datu augšuplāde bijusi sekmīga
 requests.post('https://data.gov.lv/dati/api/action/resource_update',
               data={'id': resourceID},
               headers={'X-CKAN-API-Key': apiKey},
