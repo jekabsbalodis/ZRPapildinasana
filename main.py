@@ -54,7 +54,7 @@ for productDelta in productsDelta:
     deltaNr = productDelta.findtext('reg_number')
     with open(dataZVAName, 'r', encoding='utf-8') as dataZVA:
         content = dataZVA.read()
-        if deltaNr in content:
+        if deltaNr in content:  # type: ignore
             print(deltaNr, ' ir jau saglabāts.')
             continue
     for product in products:
@@ -171,7 +171,7 @@ for productDelta in productsDelta:
                     PROHIBITED_CLASS_PROMPT, PROHIBITED_CLASS_ERROR)
                 notes_lv = stringInput(NOTES_PROMPT)
                 notes_en = stringInput(NOTES_PROMPT_EN)
-                if 'P1' in prohibited_class:
+                if 'P1' in prohibited_class: # type: ignore
                     sports_in_competition_lv = P1['sports_in_competition_lv']
                     sports_in_competition_en = P1['sports_in_competition_en']
                     sports_out_competition_lv = P1['sports_out_competition_lv']
