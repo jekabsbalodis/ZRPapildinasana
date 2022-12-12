@@ -11,7 +11,7 @@ class Config:
     MAIL_USERNAME = ('MAIL_USERNAME')
     MAIL_PASSWORD = ('MAIL_PASSWORD')
     ZRAPP_MAIL_SUBJECT_PREFIX = '[ZRApp]'
-    ZRAPP_MAIL_SENDER = 'ZRApp Admin'
+    ZRAPP_MAIL_SENDER = 'ZRApp Admin <myhood@inbox.lv>'
     ZRAPP_ADMIN = os.environ.get('ZRAPP_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
