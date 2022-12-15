@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}ZRApp - Apstiprināt lietotāja kontu{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>
+        Sveiks, {{ current_user.username }}!
+    </h1>
+    <h3>Tu vēl neesi apstiprinājis savu e-pasta adresi.</h3>
+    <p>
+        Pirms Tu vari piekļūt mājaslapai, Tev ir nepieciešams apstiprināt savu e-pasta adresi.
+        Lūdzu pārbaudi savu e-pasta pastkasti, Tev vajadzētu būt saņēmušam e-pastu ar saiti adreses apstiprināšanai.
+    </p>
+    <p>
+        Nepieciešama jauna saite adreses apstiprināšanai
+        <a href="{{ url_for('auth.resend_confirmation') }}">Spied šeit</a>
+    </p>
+</div>
+{% endblock %}

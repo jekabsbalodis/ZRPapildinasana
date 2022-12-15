@@ -8,8 +8,8 @@ class Config:
     MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in \
         ['true', 'on', '1']
-    MAIL_USERNAME = ('MAIL_USERNAME')
-    MAIL_PASSWORD = ('MAIL_PASSWORD')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ZRAPP_MAIL_SUBJECT_PREFIX = '[ZRApp]'
     ZRAPP_MAIL_SENDER = 'ZRApp Admin <myhood@inbox.lv>'
     ZRAPP_ADMIN = os.environ.get('ZRAPP_ADMIN')

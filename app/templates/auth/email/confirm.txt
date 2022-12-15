@@ -1,0 +1,12 @@
+Sveiks, {{ user.username }}!
+
+Sveicināts ZRApp!
+
+Lai apstiprinātu savu lietotāja kontu, lūdzu atver šo saiti:
+
+{{ url_for('auth.confirm', token=token, _external=True) }}
+
+Jūsu ZRApp komanda
+
+-----------
+Lūdzu neatbildiet uz šo e-pastu, vēstules, kas nosūtītas uz šo e-pasta adresi netiek pārskatītas.
