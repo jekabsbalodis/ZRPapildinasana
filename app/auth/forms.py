@@ -34,3 +34,27 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Šāds lietotāja vārds jau ir reģistrēts')
+
+
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField(
+        'Pašreizēja parole', validators=[DataRequired()])
+    password = PasswordField(
+        'Jaunā parole', validators=[
+            DataRequired(), EqualTo('password2', message='Parolēm jāsakrīt')])
+    password2 = PasswordField(
+        'Apstiprini jauno paroli', validators=[DataRequired()])
+    submit = SubmitField('Nomainīt paroli')
+
+
+class PasswordResetRequestForm(FlaskForm):
+    email = StringField('Epasts', validators=[
+                        DataRequired(), Length(1, 64), Email()])
+    submit = SubmitField('Atiestatīt paroli')
+
+
+class PasswordResetForm(FlaskForm):
+    password = PasswordField('Jaunā parole', validators=[
+        DataRequired(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('Apstiprini paroli', validators=[DataRequired()])
+    submit = SubmitField('Atiestatīt paroli')
