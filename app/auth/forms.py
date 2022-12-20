@@ -58,3 +58,14 @@ class PasswordResetForm(FlaskForm):
         DataRequired(), EqualTo('password2', message='Passwords must match')])
     password2 = PasswordField('Apstiprini paroli', validators=[DataRequired()])
     submit = SubmitField('Atiestatīt paroli')
+
+
+class ChangeEmailForm(FlaskForm):
+    email = StringField('Jaunā e-pasta adrese', validators=[DataRequired(), Length(1, 64),
+                                                            Email()])
+    password = PasswordField('Parole', validators=[DataRequired()])
+    submit = SubmitField('Nomainīt e-pasta adresi')
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data.lower()).first():
+            raise ValidationError('Šāda e-pasta adrese jau ir reģistrēta')

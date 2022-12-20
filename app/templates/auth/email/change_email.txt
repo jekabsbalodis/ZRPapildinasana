@@ -1,0 +1,10 @@
+Sveiks, {{ user.username }}!
+
+Lai apstiprinātu savu jauno e-pasta adresi, lūdzu atver šo saiti:
+
+{{ url_for('auth.change_email', token=token, _external=True) }}
+
+Jūsu ZRApp komanda
+
+-----------
+Lūdzu neatbildiet uz šo e-pastu, vēstules, kas nosūtītas uz šo e-pasta adresi netiek pārskatītas.
