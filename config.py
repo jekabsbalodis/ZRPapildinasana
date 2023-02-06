@@ -3,7 +3,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'ļoti grūta parole'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'loti gruta parole'
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'mail.inbox.lv')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in \
