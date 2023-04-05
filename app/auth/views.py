@@ -5,6 +5,7 @@ from .. import db
 from ..models import User
 from ..email import send_email
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
+from ..decorators import admin_required, permission_required
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -32,6 +33,7 @@ def logout():
 
 
 @auth.route('/register', methods=['GET', 'POST'])
+@admin_required
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():

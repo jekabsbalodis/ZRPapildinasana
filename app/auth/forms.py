@@ -28,8 +28,6 @@ class RegistrationForm(FlaskForm):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Šāds e-pasts jau ir reģistrēts')
         email_domain = field.data.split('@')[-1]
-        if email_domain not in app.config['ALLOWED_REG_DOMAINS']:
-            raise ValidationError('Jums nav tiesību izveidot lietotāja kontu')
 
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():

@@ -6,11 +6,8 @@ from . import db, login_manager
 
 
 class Permission:
-    FOLLOW = 1
-    COMMENT = 2
-    WRITE = 4
-    MODERATE = 8
-    ADMIN = 16
+    WRITE = 1
+    ADMIN = 2
 
 
 class Role(db.Model):
@@ -29,12 +26,8 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE],
-            'Moderator': [Permission.FOLLOW, Permission.COMMENT,
-                          Permission.WRITE, Permission.MODERATE],
-            'Administrator': [Permission.FOLLOW, Permission.COMMENT,
-                              Permission.WRITE, Permission.MODERATE,
-                              Permission.ADMIN],
+            'User': [Permission.WRITE],
+            'Administrator': [Permission.WRITE, Permission.ADMIN],
         }
         default_role = 'User'
         for r in roles:
