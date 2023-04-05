@@ -6,6 +6,8 @@ from ..models import User
 from ..email import send_email
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 from ..decorators import admin_required, permission_required
+import string
+import secrets
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -15,7 +17,6 @@ def login():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            # login_user(user)
             next = request.args.get('next')
             if next is None or not next.startswith('/'):
                 next = url_for('main.index')
@@ -33,12 +34,14 @@ def logout():
 
 
 @auth.route('/register', methods=['GET', 'POST'])
+@login_required
 @admin_required
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        symbols = string.ascii_letters + string.digits
         user = User(email=form.email.data.lower(),
-                    username=form.username.data, password=form.password.data)
+                    username=form.username.data, password=''.join(secrets.choice(symbols) for i in range(16)))
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()

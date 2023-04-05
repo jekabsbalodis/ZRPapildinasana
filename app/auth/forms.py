@@ -18,10 +18,11 @@ class RegistrationForm(FlaskForm):
         'E-pasts', validators=[DataRequired(), Length(1, 64), Email()])
     username = StringField('Lietotāja vārds', validators=[DataRequired(), Length(1, 64), Regexp(
         '^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Usernames must have only letters, numbers, dots or ''underscores')])
-    password = PasswordField('Parole', validators=[
-                             DataRequired(), EqualTo('password2', message='Paroles nesakrīt')])
-    password2 = PasswordField('Apstiprini paroli', validators=[DataRequired()])
-    submit = SubmitField('Reģistrēties')
+    # password = PasswordField('Parole', validators=[
+    #                          DataRequired(), EqualTo('password2', message='Paroles nesakrīt')])
+    # password2 = PasswordField('Apstiprini paroli', validators=[DataRequired()])
+    # Hidden because new user registration is done by admin and password is generated
+    submit = SubmitField('Reģistrēt')
 
     def validate_email(self, field):
         app = current_app._get_current_object()
