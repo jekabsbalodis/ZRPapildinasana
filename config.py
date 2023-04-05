@@ -14,7 +14,6 @@ class Config:
     ZRAPP_MAIL_SENDER = 'ZRApp Admin <myhood@inbox.lv>'
     ZRAPP_ADMIN = os.environ.get('ZRAPP_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    ALLOWED_REG_DOMAINS = ['inbox.lv']
 
     @staticmethod
     def init_app(app):
