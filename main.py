@@ -25,19 +25,19 @@ for productDelta in productsDelta:
     name = productDelta.findtext('med_name')
     print(name)
 
-url = 'https://dati.zva.gov.lv/zalu-registrs/export/HumanProducts.xml'
-with requests.get(url, stream=True) as r:
-    totalLength = int(requests.head(url).headers["Content-Length"])
-    with open('HumanProducts.xml', 'wb') as HumanProducts:
-        with tqdm(unit_scale=True,
-                  unit_divisor=1024,
-                  total=totalLength,
-                  file=sys.stdout,
-                  desc='HumanProducts.xml') as progress:
-            for chunk in r.iter_content(chunk_size=1024):
-                datasize = HumanProducts.write(chunk)
-                progress.update(datasize)
-drugRegister = 'HumanProducts.xml'
+# url = 'https://dati.zva.gov.lv/zalu-registrs/export/HumanProducts.xml'
+# with requests.get(url, stream=True) as r:
+#     totalLength = int(requests.head(url).headers["Content-Length"])
+#     with open('HumanProducts.xml', 'wb') as HumanProducts:
+#         with tqdm(unit_scale=True,
+#                   unit_divisor=1024,
+#                   total=totalLength,
+#                   file=sys.stdout,
+#                   desc='HumanProducts.xml') as progress:
+#             for chunk in r.iter_content(chunk_size=1024):
+#                 datasize = HumanProducts.write(chunk)
+#                 progress.update(datasize)
+# drugRegister = 'HumanProducts.xml'
 with open(drugRegister, encoding='utf-8')as drugRegister:
     allStuff = ET.parse(drugRegister)
 products = allStuff.findall('products/product')

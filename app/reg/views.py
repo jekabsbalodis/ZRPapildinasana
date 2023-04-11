@@ -36,4 +36,4 @@ def register():
                    'auth/email/confirm', user=user, token=token)
         flash('Uz Jūsu e-pasta adresi nosūtīts aicinājums apstiprināt to!')
         return redirect(url_for('main.index'))
-    return render_template('auth/register.html', form=form)
+    return render_template('reg/register.html', form=form)
