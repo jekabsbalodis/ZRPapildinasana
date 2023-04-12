@@ -1,5 +1,5 @@
 from flask import render_template, redirect, request, url_for, flash
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import fresh_login_required, login_user, logout_user, login_required, current_user
 from . import auth
 from .. import db
 from ..models import User
@@ -72,7 +72,7 @@ def resend_confirmation():
 
 
 @auth.route('/change-password', methods=['GET', 'POST'])
-@login_required
+@fresh_login_required
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
@@ -120,7 +120,7 @@ def password_reset(token):
 
 
 @auth.route('/change_email', methods=['GET', 'POST'])
-@login_required
+@fresh_login_required
 def change_email_request():
     form = ChangeEmailForm()
     if form.validate_on_submit():

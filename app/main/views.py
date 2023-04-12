@@ -1,24 +1,7 @@
-from .forms import DownloadForm
-from flask import render_template, flash, redirect, url_for
+from flask import render_template
 from . import main
-from ..downloadData import download_register, download_register_delta, download_doping_substances
 
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
-
-
-@main.route('/download', methods=['GET', 'POST'])
-# @login_required
-# @admin_required
-def download():
-    form = DownloadForm()
-    if form.validate_on_submit():
-        dateFrom = form.dateFrom.data
-        download_register()
-        download_register_delta(dateFrom=dateFrom)
-        download_doping_substances()
-        flash('Faili lejuplādēti')
-        return redirect(url_for('main.download'))
-    return render_template('download/download.html', form=form)

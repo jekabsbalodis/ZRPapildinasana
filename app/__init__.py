@@ -13,6 +13,7 @@ db = SQLAlchemy()
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
+login_manager.login_message = "Lai apmeklētu šo lapu, lūdzu pieslēdzieties sistēmai"
 
 
 def create_app(config_name):
@@ -34,5 +35,8 @@ def create_app(config_name):
     
     from .reg import reg as reg_blueprint
     app.register_blueprint(reg_blueprint, url_prefix = '/reg')
+    
+    from .filePrepare import filePrepare as filePrepare_blueprint
+    app.register_blueprint(filePrepare_blueprint, url_prefix = '/filePrepare')
 
     return app
