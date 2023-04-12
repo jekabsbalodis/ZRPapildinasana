@@ -1,11 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from datetime import date
+from wtforms import SubmitField, DateField
 from wtforms.validators import DataRequired
 
 
-class NameForm(FlaskForm):
-    name = StringField('What is your name?', validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
 class DownloadForm(FlaskForm):
+    dateFrom = DateField('Pēdējās datu atjaunošanas datums',
+                         default=date.today, format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Iesniegt')

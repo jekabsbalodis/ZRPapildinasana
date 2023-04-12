@@ -43,3 +43,6 @@ venv
 
 # XML files
 *.xml
+
+# CSV files
+*.csv

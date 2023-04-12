@@ -11,13 +11,13 @@ from helpers import prohibited, prohibitedClass, stringInput, toInclude
 conn = sqlite3.connect('piezimju lauki.sqlite')
 cur = conn.cursor()
 
-deltaDateFrom = stringInput(DELTA_DATE_FROM_PROMPT)
-deltaUrl = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + deltaDateFrom
+# deltaDateFrom = stringInput(DELTA_DATE_FROM_PROMPT)
+# deltaUrl = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + deltaDateFrom
 
-with requests.get(deltaUrl,) as r:
-    with open('delta.xml', 'wb') as delta:
-        delta.write(r.content)
-deltaFile = 'delta.xml'
+# with requests.get(deltaUrl,) as r:
+#     with open('delta.xml', 'wb') as delta:
+#         delta.write(r.content)
+# deltaFile = 'delta.xml'
 with open(deltaFile, encoding='utf-8')as deltaRegister:
     allStuffDelta = ET.parse(deltaRegister)
 productsDelta = allStuffDelta.findall('meds/med')
@@ -42,11 +42,11 @@ with open(drugRegister, encoding='utf-8')as drugRegister:
     allStuff = ET.parse(drugRegister)
 products = allStuff.findall('products/product')
 
-dataZVANameOld = input(
-    'Ievadi nosaukumu failam, kas pēdējo reizi tika nodots nodots ZVA: ')
-date = input('Ievadi šodienas datumu šādā formātā - YYYYMMDD: ')
-dataZVAName = date + '_antidopinga_vielas.csv'
-shutil.copyfile(dataZVANameOld, dataZVAName)
+# dataZVANameOld = input(
+#     'Ievadi nosaukumu failam, kas pēdējo reizi tika nodots nodots ZVA: ')
+# date = input('Ievadi šodienas datumu šādā formātā - YYYYMMDD: ')
+# dataZVAName = date + '_antidopinga_vielas.csv'
+# shutil.copyfile(dataZVANameOld, dataZVAName)
 
 productsDeltaChecked = []
 i = 0
