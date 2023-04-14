@@ -9,7 +9,7 @@ from ..models import AddedMedication
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
 @login_required
-def download():
+def download(): # TODO: Add loading indicator to data download
     form = DownloadForm()
     if form.validate_on_submit():
         dateFrom = form.dateFrom.data
