@@ -160,6 +160,16 @@ class AnonymousUser(AnonymousUserMixin):
         return False
 
 
+class AddedMedication(db.Model):
+    __tablename__ = 'added_medication'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, index=True)
+    regNumber = db.Column(db.String(64))
+    atcCode = db.Column(db.String(64))
+    form = db.Column(db.Text)
+    activeSubstance = db.Column(db.Text)
+
+
 login_manager.anonymous_user = AnonymousUser
 
 
