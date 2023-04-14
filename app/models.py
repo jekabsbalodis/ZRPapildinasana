@@ -3,6 +3,7 @@ from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import AnonymousUserMixin, UserMixin
 from . import db, login_manager
+import xml.etree.ElementTree as ET
 
 
 class Permission:
@@ -168,6 +169,20 @@ class AddedMedication(db.Model):
     atcCode = db.Column(db.String(64))
     form = db.Column(db.Text)
     activeSubstance = db.Column(db.Text)
+
+    @staticmethod
+    def insert_medication():
+        AddedMedication.query.delete() # Start with an empty table to avoid duplicates
+        db.session.commit()
+        with open('delta.xml', encoding='utf-8') as file:
+            allStuff = ET.parse(file)
+        products = allStuff.findall('meds/med')
+        for product in products:
+            name = product.findtext('med_name')
+            regNumber = product.findtext('reg_number')
+            m = AddedMedication(name=name, regNumber=regNumber)
+            db.session.add(m)
+            db.session.commit()
 
 
 login_manager.anonymous_user = AnonymousUser

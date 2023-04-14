@@ -5,8 +5,6 @@ from . import filePrepare
 from .. import db
 from ..downloadData import download_register, download_register_delta, download_doping_substances
 from ..models import AddedMedication
-import xml.etree.ElementTree as ET
-
 
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
@@ -25,13 +23,5 @@ def download():
 @filePrepare.route('/checkMedication', methods=['GET', 'POST'])
 @login_required
 def checkMedication():
-    with open('delta.xml', encoding='utf-8') as file:
-        allStuff = ET.parse(file)
-    products = allStuff.findall('meds/med')
-    for product in products:
-        name = product.findtext('med_name')
-        regNumber = product.findtext('reg_number')
-        m = AddedMedication(name=name, regNumber=regNumber)
-        db.session.add(m)
-        db.session.commit()
+    AddedMedication.insert_medication()
     return render_template('filePrepare/checkMedication.html')
