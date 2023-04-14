@@ -21,6 +21,7 @@ def download_register_delta(dateFrom):
 
 
 def download_doping_substances():
+    # TODO: Update URL to use one from https://data.gov.lv/dati/lv/api/3/action/package_show?id=medikamenti-kas-satur-dopinga-vielas info
     url = 'https://data.gov.lv/dati/lv/dataset/medikamenti-kas-satur-dopinga-vielas/resource/ee8f9b14-1eee-494a-b7f5-6777a8232dcb/download'
     fileName = 'antidopinga_vielas.csv'
     with requests.get(url) as r:
