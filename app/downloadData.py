@@ -8,6 +8,7 @@ def download_register():
     with requests.get(url) as r:
         with open('HumanProducts.xml', 'wb') as HumanProducts:
             HumanProducts.write(r.content)
+    return 'HumanProducts.xml'
 
 
 def download_register_delta(dateFrom):
@@ -16,6 +17,7 @@ def download_register_delta(dateFrom):
     with requests.get(url) as r:
         with open('delta.xml', 'wb') as delta:
             delta.write(r.content)
+    return 'delta.xml'
 
 
 def download_doping_substances():

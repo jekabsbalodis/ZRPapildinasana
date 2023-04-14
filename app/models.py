@@ -171,18 +171,37 @@ class AddedMedication(db.Model):
     activeSubstance = db.Column(db.Text)
 
     @staticmethod
-    def insert_medication():
-        AddedMedication.query.delete() # Start with an empty table to avoid duplicates
+    def insert_medication(deltaFile, file):
+        AddedMedication.query.delete()  # Start with an empty table to avoid duplicates
         db.session.commit()
-        with open('delta.xml', encoding='utf-8') as file:
-            allStuff = ET.parse(file)
-        products = allStuff.findall('meds/med')
-        for product in products:
-            name = product.findtext('med_name')
-            regNumber = product.findtext('reg_number')
-            m = AddedMedication(name=name, regNumber=regNumber)
-            db.session.add(m)
-            db.session.commit()
+        with open(deltaFile, encoding='utf-8') as df:
+            allStuffDelta = ET.parse(df)
+        productsDelta = allStuffDelta.findall('meds/med')
+        with open(file, encoding='utf-8') as f:
+            allStuff = ET.parse(f)
+        products = allStuff.findall('products/product')
+        productsDeltaChecked = []
+        for productDelta in productsDelta:
+            for product in products:
+                if productDelta.findtext('reg_number') in productsDeltaChecked:
+                    continue
+                if productDelta.findtext('reg_number') == product.findtext('authorisation_no'):
+                    name = productDelta.findtext('med_name')
+                    regNumber = productDelta.findtext('reg_number')
+                    atcCode = product.findtext('atc_code')
+                    form = product.findtext('pharmaceutical_form_lv')
+                    activeSubstance = product.findtext('active_substance')
+                    m = AddedMedication(
+                        name=name, regNumber=regNumber, atcCode=atcCode, form=form, activeSubstance=activeSubstance)
+                    db.session.add(m)
+                    db.session.commit()
+                    productsDeltaChecked.append(productDelta.findtext('reg_number'))
+
+
+    def check_new_medication(self):
+        m = self.name
+        return m
+
 
 
 login_manager.anonymous_user = AnonymousUser

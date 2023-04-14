@@ -13,15 +13,16 @@ def download():
     form = DownloadForm()
     if form.validate_on_submit():
         dateFrom = form.dateFrom.data
-        # download_register()
-        download_register_delta(dateFrom=dateFrom)
+        AddedMedication.insert_medication(
+            download_register_delta(dateFrom=dateFrom), download_register())
         download_doping_substances()
         flash('Faili lejuplādēti')
         return redirect(url_for('filePrepare.checkMedication'))
     return render_template('filePrepare/download.html', form=form)
 
+
 @filePrepare.route('/checkMedication', methods=['GET', 'POST'])
 @login_required
 def checkMedication():
-    AddedMedication.insert_medication()
-    return render_template('filePrepare/checkMedication.html')
+    addedMedications = AddedMedication.query.all()
+    return render_template('filePrepare/checkMedication.html', addedMedications=addedMedications)
