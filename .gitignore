@@ -46,3 +46,6 @@ venv
 
 # CSV files
 *.csv
+
+# Visual Studio Code
+.vscode
