@@ -1,9 +1,9 @@
-from itsdangerous import URLSafeTimedSerializer as Serializer
-from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer as Serializer
+import xml.etree.ElementTree as ET
+from flask import current_app
 from flask_login import AnonymousUserMixin, UserMixin
 from . import db, login_manager
-import xml.etree.ElementTree as ET
 
 
 class Permission:
@@ -160,6 +160,13 @@ class AnonymousUser(AnonymousUserMixin):
     def is_administrator(self):
         return False
 
+login_manager.anonymous_user = AnonymousUser
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 class AddedMedication(db.Model):
     __tablename__ = 'added_medication'
@@ -195,18 +202,9 @@ class AddedMedication(db.Model):
                         name=name, regNumber=regNumber, atcCode=atcCode, form=form, activeSubstance=activeSubstance)
                     db.session.add(m)
                     db.session.commit()
-                    productsDeltaChecked.append(productDelta.findtext('reg_number'))
-
+                    productsDeltaChecked.append(
+                        productDelta.findtext('reg_number'))
 
     def check_new_medication(self):
         m = self.name
         return m
-
-
-
-login_manager.anonymous_user = AnonymousUser
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))

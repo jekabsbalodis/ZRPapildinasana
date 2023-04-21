@@ -4,7 +4,8 @@ from . import auth
 from .. import db
 from ..models import User
 from ..email import send_email
-from .forms import LoginForm, ChangePasswordForm, PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
+from .forms import LoginForm, ChangePasswordForm,\
+    PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 
 
 @auth.before_app_request
@@ -72,6 +73,7 @@ def resend_confirmation():
 
 
 @auth.route('/change-password', methods=['GET', 'POST'])
+@login_required
 @fresh_login_required
 def change_password():
     form = ChangePasswordForm()
@@ -120,6 +122,7 @@ def password_reset(token):
 
 
 @auth.route('/change_email', methods=['GET', 'POST'])
+@login_required
 @fresh_login_required
 def change_email_request():
     form = ChangeEmailForm()
