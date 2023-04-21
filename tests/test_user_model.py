@@ -33,7 +33,11 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_password_salts_are_random(self):
         u = User(password='cat')
+        db.session.add(u)
+        db.session.commit()
         u2 = User(password='cat')
+        db.session.add(u2)
+        db.session.commit()
         self.assertTrue(u.password_hash != u2.password_hash)
 
     def test_valid_confirmation_token(self):
@@ -45,8 +49,9 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_invalid_confirmation_token(self):
         u1 = User(password='cat')
-        u2 = User(password='dog')
         db.session.add(u1)
+        db.session.commit()
+        u2 = User(password='dog')
         db.session.add(u2)
         db.session.commit()
         token = u1.generate_confirmation_token()
@@ -86,8 +91,9 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_invalid_email_change_token(self):
         u1 = User(email='john@example.com', password='cat')
-        u2 = User(email='susan@example.org', password='dog')
         db.session.add(u1)
+        db.session.commit()
+        u2 = User(email='susan@example.org', password='dog')
         db.session.add(u2)
         db.session.commit()
         token = u1.generate_email_change_token('david@example.net')
@@ -96,8 +102,9 @@ class UserModelTestCase(unittest.TestCase):
 
     def test_duplicate_email_change_token(self):
         u1 = User(email='john@example.com', password='cat')
-        u2 = User(email='susan@example.org', password='dog')
         db.session.add(u1)
+        db.session.commit()
+        u2 = User(email='susan@example.org', password='dog')
         db.session.add(u2)
         db.session.commit()
         token = u2.generate_email_change_token('john@example.com')
