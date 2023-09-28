@@ -7,9 +7,9 @@ from ..models import User
 
 class RegistrationForm(FlaskForm):
     email = StringField(
-        'E-pasts', validators=[DataRequired(), Length(1, 64), Email()])
+        'E-pasts', validators=[DataRequired(), Length(1, 64), Email('Ievadīta nederīga e-pasta adrese')])
     username = StringField('Lietotāja vārds', validators=[DataRequired(), Length(1, 64), Regexp(
-        '^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Usernames must have only letters, numbers, dots or ''underscores')])
+        '^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Lietotāja vārdam jāsastāv tikai no burtiem, cipariem, punkta vai apakšvītras')])
     submit = SubmitField('Reģistrēt')
 
     def validate_email(self, field):

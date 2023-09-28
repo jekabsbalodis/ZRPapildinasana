@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% import "bootstrap/form.html" as wtf %}
+
+{% block title %}ZRApp - pārbaudīt medikamentus{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Pārbaudīt medikamentus</h1>
+</div>
+
+<table class="table-striped table">
+    {% for addedMedication in addedMedications %}
+    <tr>
+        <td class="col-auto">
+            <h2>
+                {{ addedMedication.name }}
+            </h2>
+        </td>
+        <td class="col-auto">{{ addedMedication.regNumber }}</td>
+        <td class="col-auto">{{ addedMedication.atcCode }}</td>
+        <td class="col-auto">{{ addedMedication.form }}</td>
+        <td class="col-auto">{{ addedMedication.activeSubstance }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+{{ wtf.render_form(form) }}
+<br>
+
+{% endblock %}
