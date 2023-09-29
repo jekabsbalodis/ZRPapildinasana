@@ -1,15 +1,14 @@
 {% extends "base.html" %}
-{% import "bootstrap/form.html" as wtf %}
+{% from 'bootstrap5/form.html' import render_form %}
 
 {% block title %}ZRApp - Pieslēgties{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Pieslēgties</h1>
-</div>
-<div class="col-md-4">
-    {{ wtf.render_form(form) }}
-    <br>
-    <p>Esi aizmirsis savu paroli? <a href="{{ url_for('auth.password_reset_request') }}">Spied šeit, lai atiestatītu to</a>.</p>
+<h1 class="display-1">Pieslēgties</h1>
+<hr>
+{{ render_form(form, extra_classes='col-6') }}
+<br>
+<p>Esi aizmirsis savu paroli? <a href="{{ url_for('auth.password_reset_request') }}">Spied šeit, lai atiestatītu to</a>.
+</p>
 </div>
 {% endblock %}
