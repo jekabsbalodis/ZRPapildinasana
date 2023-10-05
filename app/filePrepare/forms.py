@@ -9,7 +9,7 @@ class DownloadForm(FlaskForm):
                          default=date.today, format='%Y-%m-%d', validators=[DataRequired()])
     sumbit = SubmitField('Apstiprināt')
 
-
+# TODO: Izmantot AddedMedication, lai veidotu ciklu cauri pievienojamajiem medikamentiem
 class ReviewMedicationForm(FlaskForm):
     sumbit = SubmitField('Apstiprināt')
 
