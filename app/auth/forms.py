@@ -9,7 +9,7 @@ class LoginForm(FlaskForm):
                         DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Parole', validators=[DataRequired()])
     remember_me = BooleanField('Atcerēties mani')
-    sumbit = SubmitField('Pieslēgties')
+    submit = SubmitField('Pieslēgties')
 
 
 
