@@ -1,6 +1,6 @@
-from flask_wtf import FlaskForm
 from datetime import date
-from wtforms import SubmitField, DateField, BooleanField
+from flask_wtf import FlaskForm
+from wtforms import SubmitField, DateField, BooleanField, StringField, FieldList, FormField
 from wtforms.validators import DataRequired
 
 
@@ -9,10 +9,12 @@ class DownloadForm(FlaskForm):
                          default=date.today, format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Apstiprināt')
 
-# TODO: Izmantot AddedMedication, lai veidotu ciklu cauri pievienojamajiem medikamentiem
+
 class ReviewMedicationForm(FlaskForm):
+    include = BooleanField('Iekļaut sarakstā')
+    teksts = StringField('kaut kāds teksts')
     submit = SubmitField('Apstiprināt')
 
-# class CheckMedicationForm(FlaskForm):
-#     include = BooleanField('Iekļaut sarakstā')
-#     submit = SubmitField('Apstiprināt')
+
+class ReviewMedicationFormList(FlaskForm):
+    medications = FieldList(FormField(ReviewMedicationForm), min_entries=1)

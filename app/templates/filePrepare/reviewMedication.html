@@ -1,26 +1,20 @@
 {% extends "base.html" %}
-{% from 'bootstrap5/form.html' import render_form %}
+{% block title %}<title>ZRApp - pārbaudīt medikamentus</title>{% endblock %}
 
-{% block title %}ZRApp - pārbaudīt medikamentus{% endblock %}
+{% from 'bootstrap5/form.html' import render_form_row %}
+
 
 {% block page_content %}
 <h1 class="display-1">Pārbaudīt medikamentus</h1>
 <hr>
 <br>
-<table class="table-striped table">
-    {% for addedMedication in addedMedications %}
-    <tr>
-        <td class="col-auto">
-            <h2>
-                {{ addedMedication.name }}
-            </h2>
-        </td>
-        <td class="col-auto">{{ addedMedication.regNumber }}</td>
-        <td class="col-auto">{{ addedMedication.atcCode }}</td>
-        <td class="col-auto">{{ addedMedication.form }}</td>
-        <td class="col-auto">{{ addedMedication.activeSubstance }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<form method="post">
+{% for review_medication_form in form.medications %}
+    {{ review_medication_form.csrf_token() }}
+    {{ render_form_row([review_medication_form.include]) }}
+    {{ render_form_row([review_medication_form.teksts]) }}
+    {{ render_form_row([review_medication_form.submit]) }}
+{% endfor %}
+</form>
 <br>
 {% endblock %}

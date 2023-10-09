@@ -1,6 +1,6 @@
+import xml.etree.ElementTree as ET
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer as Serializer
-import xml.etree.ElementTree as ET
 from flask import current_app
 from flask_login import AnonymousUserMixin, UserMixin
 from . import db, login_manager
@@ -160,6 +160,7 @@ class AnonymousUser(AnonymousUserMixin):
     def is_administrator(self):
         return False
 
+
 login_manager.anonymous_user = AnonymousUser
 
 
@@ -171,7 +172,9 @@ def load_user(user_id):
 class AddedMedication(db.Model):
     __tablename__ = 'added_medication'
     id = db.Column(db.Integer, primary_key=True)
+    include = db.Column(db.Boolean, default=False)
     name = db.Column(db.Text, index=True)
+    prohibitedClass = db.Column(db.Text)
     regNumber = db.Column(db.String(64))
     atcCode = db.Column(db.String(64))
     form = db.Column(db.Text)

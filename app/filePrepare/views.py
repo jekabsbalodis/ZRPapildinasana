@@ -1,11 +1,10 @@
 from flask_login import login_required
-from flask import render_template, flash, redirect, url_for, request
-from .forms import DownloadForm, ReviewMedicationForm
+from flask import render_template, flash, redirect, url_for
+import requests
+from .forms import DownloadForm, ReviewMedicationFormList
 from . import filePrepare
-from .. import db
 from ..downloadData import download_register, download_register_delta, download_doping_substances
 from ..models import AddedMedication
-import requests
 
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
@@ -28,8 +27,14 @@ def download():
 @filePrepare.route('/reviewMedication', methods=['GET', 'POST'])
 @login_required
 def reviewMedication():
-    form = ReviewMedicationForm()
     addedMedications = AddedMedication.query.all()
+    form = ReviewMedicationFormList(medications = addedMedications)
     if form.validate_on_submit():
-        return redirect(url_for('filePrepare.checkMedication'))
-    return render_template('filePrepare/reviewMedication.html',form=form, addedMedications=addedMedications)
+        for field in form.medications:
+            flash(field.teksts.data)
+        # for addedMedication in addedMedications:
+        #     addedMedication.include = form.medications.include.data
+        #     teksts = form.medications.teksts.data
+        #     flash(teksts)
+        #     # return redirect(url_for('filePrepare.checkMedication'))
+    return render_template('filePrepare/reviewMedication.html',form=form)
