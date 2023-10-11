@@ -1,20 +1,32 @@
 {% extends "base.html" %}
-{% block title %}<title>ZRApp - pārbaudīt medikamentus</title>{% endblock %}
-
-{% from 'bootstrap5/form.html' import render_form_row %}
-
+{% block title %}<title>ZRApp - pārskatīt medikamentus</title>{% endblock %}
 
 {% block page_content %}
-<h1 class="display-1">Pārbaudīt medikamentus</h1>
+<h1 class="display-1">Pārskatīt medikamentus</h1>
 <hr>
-<br>
-<form method="post">
-{% for review_medication_form in form.medications %}
-    {{ review_medication_form.csrf_token() }}
-    {{ render_form_row([review_medication_form.include]) }}
-    {{ render_form_row([review_medication_form.teksts]) }}
-    {{ render_form_row([review_medication_form.submit]) }}
-{% endfor %}
-</form>
+<p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienoti {{ count }} jauni medikamenti.</p>
+<p>Pievienoti šādi medikamenti.</p>
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-2 
+                row-cols-lg-3 g-4">
+        {%- for addedMedication in addedMedications %}
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <strong>
+                        <p class="card-title">
+                            {{addedMedication.name}}
+                        </p>
+                    </strong>
+                    <p class="card-text">
+                        {{ addedMedication.regNumber}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {%- endfor %}
+    </div>
+</div>
 <br>
 {% endblock %}

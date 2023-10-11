@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import csv
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
@@ -172,13 +173,21 @@ def load_user(user_id):
 class AddedMedication(db.Model):
     __tablename__ = 'added_medication'
     id = db.Column(db.Integer, primary_key=True)
-    include = db.Column(db.Boolean, default=False)
-    name = db.Column(db.Text, index=True)
-    prohibitedClass = db.Column(db.Text)
-    regNumber = db.Column(db.String(64))
     atcCode = db.Column(db.String(64))
+    name = db.Column(db.Text, index=True)
+    regNumber = db.Column(db.String(64))
     form = db.Column(db.Text)
     activeSubstance = db.Column(db.Text)
+    include = db.Column(db.Boolean, default=False)
+    prohibitedOUTCompetition = db.Column(db.Boolean, default=False)
+    prohibitedINCompetition = db.Column(db.Boolean, default=False)
+    prohibitedClass = db.Column(db.Text)
+    notesLV = db.Column(db.String(64))
+    sportsINCompetitionLV = db.Column(db.String(64))
+    sportsOUTCompetitionLV = db.Column(db.String(64))
+    notesEN = db.Column(db.String(64))
+    sportsINCompetitionEN = db.Column(db.String(64))
+    sportsOUTCompetitionEN = db.Column(db.String(64))
 
     @staticmethod
     def insert_medication(deltaFile, file):
@@ -208,6 +217,10 @@ class AddedMedication(db.Model):
                     productsDeltaChecked.append(
                         productDelta.findtext('reg_number'))
 
-    def check_new_medication(self):
-        m = self.name
-        return m
+    def check_new_medication(submittedFile, regNumber):
+        with open(submittedFile, 'rt') as file:
+            reader = csv.reader(file, dialect='excel', delimiter=',')
+            for row in reader:
+                for field in row:
+                    if field == regNumber:
+                        return (True)
