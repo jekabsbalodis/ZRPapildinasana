@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %}<title>ZRApp - pievienot informāciju</title>{% endblock %}
+
+{% block page_content %}
+
+<h1 class="display-1">Informācijas pievienošana</h1>
+<hr>
+
+{{ regNumber }}
+
+
+{{ render_form(form, extra_classes='col-6') }}
+
+{% endblock %}

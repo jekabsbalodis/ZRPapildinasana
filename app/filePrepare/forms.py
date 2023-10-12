@@ -1,6 +1,6 @@
 from datetime import date
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, DateField, RadioField, StringField, FieldList, FormField
+from wtforms import SubmitField, DateField, BooleanField, StringField
 from wtforms.validators import DataRequired
 
 
@@ -11,11 +11,6 @@ class DownloadForm(FlaskForm):
 
 
 class ReviewMedicationForm(FlaskForm):
-    include = RadioField('Iekļaut sarakstā', choices=[
-                         'Jā', 'Nē'], validators=[DataRequired()])
+    prohibitedINCompetition = BooleanField('Vai medikaments ir aizliegts sportā?')
     teksts = StringField('kaut kāds teksts')
-
-
-class ReviewMedicationFormList(FlaskForm):
-    medications = FieldList(FormField(ReviewMedicationForm), min_entries=1)
     submit = SubmitField('Apstiprināt')

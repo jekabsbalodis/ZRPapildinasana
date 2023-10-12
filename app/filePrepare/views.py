@@ -1,8 +1,9 @@
 from flask_login import login_required
-from flask import render_template, flash, redirect, url_for, session
+from flask import render_template, flash, redirect, url_for, request
 import requests
-from .forms import DownloadForm, ReviewMedicationFormList
+from .forms import DownloadForm, ReviewMedicationForm
 from . import filePrepare
+from .. import db
 from ..downloadData import download_register, download_register_delta, download_doping_substances
 from ..models import AddedMedication
 
@@ -34,5 +35,12 @@ def reviewMedication():
 @filePrepare.route('/checkMedication', methods=['GET', 'POST'])
 @login_required
 def checkMedication():
-    data = session.get('data')
-    return render_template('filePrepare/checkMedication.html', data=data)
+    regNumber = request.args.get('regNumber')
+    form = ReviewMedicationForm()
+    if form.is_submitted():
+        medication = AddedMedication.query.filter_by(regNumber=regNumber).first()
+        medication.prohibitedINCompetition = form.prohibitedINCompetition.data
+        medication.userChecked = True
+        db.session.commit()
+        return redirect(url_for('filePrepare.reviewMedication'))
+    return render_template('filePrepare/checkMedication.html', form=form, regNumber=regNumber)
