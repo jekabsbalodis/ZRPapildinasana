@@ -179,6 +179,7 @@ class AddedMedication(db.Model):
     form = db.Column(db.Text)
     activeSubstance = db.Column(db.Text)
     include = db.Column(db.Boolean, default=False)
+    userChecked = db.Column(db.Boolean, default = False)
     prohibitedOUTCompetition = db.Column(db.Boolean, default=False)
     prohibitedINCompetition = db.Column(db.Boolean, default=False)
     prohibitedClass = db.Column(db.Text)

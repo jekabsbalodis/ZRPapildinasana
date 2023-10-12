@@ -12,16 +12,27 @@
                 row-cols-lg-3 g-4">
         {%- for addedMedication in addedMedications %}
         <div class="col">
-            <div class="card">
+            {% if addedMedication.userChecked == True %}
+            <div class="card text-bg-success">
+            {% else %}
+            <div class="card text-bg-warning">
+            {%endif%}
                 <div class="card-body">
-                    <strong>
+                    
                         <p class="card-title">
-                            {{addedMedication.name}}
+                            Medikamenta nosaukums: 
+                            <strong>{{addedMedication.name}}</strong><br>
+                            Aktīvā viela:
+                            <strong>{{ addedMedication.activeSubstance}}</strong>
                         </p>
-                    </strong>
+                    
                     <p class="card-text">
-                        {{ addedMedication.regNumber}}
+                        Reģistrācijas numurs:
+                        {{ addedMedication.regNumber}}<br>
+                        Zāļu forma:
+                        {{ addedMedication.form}}
                     </p>
+                    <a href="#" class="btn btn-secondary btn-sm stretched-link">Ievadīt informāciju</a>
                 </div>
             </div>
         </div>
