@@ -73,8 +73,10 @@
         {% endfor %}
     </div>
     <div class="container-lg">
-        {% block page_content %}
-        {% endblock %}
+        <div class="m-5">
+            {% block page_content %}
+            {% endblock %}
+        </div>
     </div>
 
     {% block scripts %}
