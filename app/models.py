@@ -173,8 +173,8 @@ def load_user(user_id):
 class AddedMedication(db.Model):
     __tablename__ = 'added_medication'
     id = db.Column(db.Integer, primary_key=True)
-    atcCode = db.Column(db.String(64))
-    name = db.Column(db.Text, index=True)
+    atcCode = db.Column(db.String(10))
+    name = db.Column(db.Text)
     regNumber = db.Column(db.String(64))
     form = db.Column(db.Text)
     activeSubstance = db.Column(db.Text)
@@ -182,13 +182,13 @@ class AddedMedication(db.Model):
     userChecked = db.Column(db.Boolean, default = False)
     prohibitedOUTCompetition = db.Column(db.Boolean, default=False)
     prohibitedINCompetition = db.Column(db.Boolean, default=False)
-    prohibitedClass = db.Column(db.Text)
-    notesLV = db.Column(db.String(64))
-    sportsINCompetitionLV = db.Column(db.String(64))
-    sportsOUTCompetitionLV = db.Column(db.String(64))
-    notesEN = db.Column(db.String(64))
-    sportsINCompetitionEN = db.Column(db.String(64))
-    sportsOUTCompetitionEN = db.Column(db.String(64))
+    prohibitedClass = db.Column(db.String(10))
+    notesLV = db.Column(db.Text)
+    sportsINCompetitionLV = db.Column(db.Text)
+    sportsOUTCompetitionLV = db.Column(db.Text)
+    notesEN = db.Column(db.Text)
+    sportsINCompetitionEN = db.Column(db.Text)
+    sportsOUTCompetitionEN = db.Column(db.Text)
 
     @staticmethod
     def insert_medication(deltaFile, file):
