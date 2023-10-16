@@ -8,5 +8,31 @@
 <h1 class="display-1">Informācijas pievienošana</h1>
 <hr>
 
-{{ render_form(form, extra_classes='col-6') }}
+<div class="row">
+    <div class="col">{{ render_form(form) }}</div>
+    <div class="col">
+        <div class="sticky-top">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Medikamenta nosaukums:</td>
+                        <td><strong>{{ medication.name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Aktīvā viela:</td>
+                        <td><strong>{{ medication.activeSubstance}}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Reģistrācijas numurs:</td>
+                        <td>{{ medication.regNumber}}</td>
+                    </tr>
+                    <tr>
+                        <td>Zāļu forma:</td>
+                        <td><strong>{{ medication.form}}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -43,11 +43,18 @@ def checkMedication():
     if form.validate_on_submit():
         medication.userChecked = True
         if form.include.data:
+            medication.prohibitedOUTCompetition = form.prohibitedOUTCompetition.data
             medication.prohibitedINCompetition = form.prohibitedINCompetition.data
             medication.prohibitedClass = form.prohibitedClass.data
+            medication.notesLV = form.notesLV.data
+            medication.notesEN = form.notesEN.data
+            medication.sportsINCompetitionLV = form.sportsINCompetitionLV.data
+            medication.sportsINCompetitionEN = form.sportsINCompetitionEN.data
+            medication.sportsOUTCompetitionLV = form.sportsOUTCompetitionLV.data
+            medication.sportsOUTCompetitionEN = form.sportsOUTCompetitionEN.data
             medication.include = True
         if form.notInclude.data:
             medication.include = False
         db.session.commit()
         return redirect(url_for('filePrepare.reviewMedication'))
-    return render_template('filePrepare/checkMedication.html', form=form)
+    return render_template('filePrepare/checkMedication.html', form=form, medication=medication)
