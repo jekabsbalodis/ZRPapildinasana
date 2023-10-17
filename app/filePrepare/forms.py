@@ -1,6 +1,6 @@
 from datetime import date
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, DateField, BooleanField, StringField, TextAreaField
+from wtforms import SubmitField, DateField, SelectField, StringField, TextAreaField
 from wtforms.validators import DataRequired, Length
 
 
@@ -11,10 +11,10 @@ class DownloadForm(FlaskForm):
 
 
 class ReviewMedicationForm(FlaskForm):
-    prohibitedOUTCompetition = BooleanField(
-        'Vai medikaments ir aizliegts ārpus sacensībām?')
-    prohibitedINCompetition = BooleanField(
-        'Vai medikaments ir aizliegts sacensību laikā?')
+    prohibitedOUTCompetition = SelectField(
+        'Vai medikaments ir aizliegts ārpus sacensībām?', choices=['Jā', 'Nē', 'Jā*', 'Ar nosacījumu'], default='Nē')
+    prohibitedINCompetition = SelectField(
+        'Vai medikaments ir aizliegts sacensību laikā?', choices=['Jā', 'Nē', 'Jā*', 'Ar nosacījumu'], default='Nē')
     prohibitedClass = StringField('Kurai Aizliegto vielu un metožu saraksta klasei medikaments pieder?', validators=[Length(max=10)])
     notesLV = TextAreaField('Piezīmes par medikamenta lietošanu')
     notesEN = TextAreaField('Norādi šo informāciju angliski')

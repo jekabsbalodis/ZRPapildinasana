@@ -5,7 +5,7 @@ from .forms import DownloadForm, ReviewMedicationForm
 from . import filePrepare
 from .. import db
 from ..downloadData import download_register, download_register_delta, download_doping_substances
-from ..models import AddedMedication
+from ..models import AddedMedication, NotesFields
 
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
@@ -40,6 +40,8 @@ def checkMedication():
     regNumber = request.args.get('regNumber')
     form = ReviewMedicationForm()
     medication = AddedMedication.query.filter_by(regNumber=regNumber).first()
+    atcCode = medication.atcCode
+    notes = NotesFields.query.filter_by(atcCode=atcCode).first()
     if form.validate_on_submit():
         medication.userChecked = True
         if form.include.data:
@@ -57,4 +59,4 @@ def checkMedication():
             medication.include = False
         db.session.commit()
         return redirect(url_for('filePrepare.reviewMedication'))
-    return render_template('filePrepare/checkMedication.html', form=form, medication=medication)
+    return render_template('filePrepare/checkMedication.html', form=form, medication=medication, notes=notes)

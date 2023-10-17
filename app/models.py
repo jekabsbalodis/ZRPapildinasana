@@ -175,13 +175,13 @@ class AddedMedication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     atcCode = db.Column(db.String(10))
     name = db.Column(db.Text)
-    regNumber = db.Column(db.String(64))
+    regNumber = db.Column(db.String(20))
     form = db.Column(db.Text)
     activeSubstance = db.Column(db.Text)
     include = db.Column(db.Boolean, default=False)
-    userChecked = db.Column(db.Boolean, default = False)
-    prohibitedOUTCompetition = db.Column(db.Boolean, default=False)
-    prohibitedINCompetition = db.Column(db.Boolean, default=False)
+    userChecked = db.Column(db.Boolean, default=False)
+    prohibitedOUTCompetition = db.Column(db.String(15))
+    prohibitedINCompetition = db.Column(db.String(15))
     prohibitedClass = db.Column(db.String(10))
     notesLV = db.Column(db.Text)
     sportsINCompetitionLV = db.Column(db.Text)
@@ -225,3 +225,64 @@ class AddedMedication(db.Model):
                 for field in row:
                     if field == regNumber:
                         return (True)
+
+
+class NotesFields(db.Model):
+    __tablename__ = 'notes_fields'
+    id = db.Column(db.Integer, primary_key=True)
+    atcCode = db.Column(db.String(10), unique=True)
+    prohibitedOUTCompetition = db.Column(db.String(15))
+    prohibitedINCompetition = db.Column(db.String(15))
+    prohibitedClass = db.Column(db.String(10))
+    notesLV = db.Column(db.Text)
+    sportsINCompetitionLV = db.Column(db.Text)
+    sportsOUTCompetitionLV = db.Column(db.Text)
+    notesEN = db.Column(db.Text)
+    sportsINCompetitionEN = db.Column(db.Text)
+    sportsOUTCompetitionEN = db.Column(db.Text)
+
+    @staticmethod
+    def update_notes(drugRegister, dopingRegister):
+        with open(drugRegister, encoding='utf-8') as dr:
+            allStuff = ET.parse(dr)
+        products = allStuff.findall('products/product')
+
+        lineChecked = []
+        atcCodeChecked = []
+
+        with open(dopingRegister, encoding='utf-8', newline='') as dr:
+            reader = csv.reader(dr, dialect='excel', delimiter=',')
+            for line in reader:
+                if line[1] == 'authorisation_no':
+                    continue
+                for product in products:
+                    if line[1] in lineChecked:
+                        continue
+                    authorisationNo = product.findtext('authorisation_no')
+                    if line[1] == authorisationNo:
+                        atcCode = product.findtext('atc_code')
+                        if atcCode in atcCodeChecked:
+                            continue
+                        prohibitedOUTCompetition = line[4]
+                        prohibitedINCompetition = line[5]
+                        prohibitedClass = line[6]
+                        notesLV = line[7]
+                        sportsINCompetitionLV = line[8]
+                        sportsOUTCompetitionLV = line[9]
+                        notesEN = line[10]
+                        sportsINCompetitionEN = line[11]
+                        sportsOUTCompetitionEN = line[12]
+                        m = NotesFields(atcCode=atcCode,
+                                        prohibitedOUTCompetition=prohibitedOUTCompetition,
+                                        prohibitedINCompetition=prohibitedINCompetition,
+                                        prohibitedClass=prohibitedClass,
+                                        notesLV=notesLV,
+                                        sportsINCompetitionLV=sportsINCompetitionLV,
+                                        sportsOUTCompetitionLV=sportsOUTCompetitionLV,
+                                        notesEN=notesEN,
+                                        sportsINCompetitionEN=sportsINCompetitionEN,
+                                        sportsOUTCompetitionEN=sportsOUTCompetitionEN)
+                        db.session.add(m)
+                        db.session.commit()
+                        lineChecked.append(line[1])
+                        atcCodeChecked.append(atcCode)
