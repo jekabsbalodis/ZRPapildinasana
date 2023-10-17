@@ -5,6 +5,8 @@ from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
 from flask_login import AnonymousUserMixin, UserMixin
 from . import db, login_manager
+from datetime import date
+import shutil
 
 
 class Permission:
@@ -218,13 +220,29 @@ class AddedMedication(db.Model):
                     productsDeltaChecked.append(
                         productDelta.findtext('reg_number'))
 
-    def check_new_medication(submittedFile, regNumber):
-        with open(submittedFile, 'rt') as file:
-            reader = csv.reader(file, dialect='excel', delimiter=',')
-            for row in reader:
-                for field in row:
-                    if field == regNumber:
-                        return (True)
+    @staticmethod
+    def write_information(fileName):
+        newFileName = date.today().strftime('%Y%m%d')+'_'+fileName
+        shutil.copyfile(fileName, newFileName)
+        with open(newFileName, 'a', encoding='utf-8', newline='') as newFile:
+            writer = csv.writer(newFile, dialect='excel', delimiter=',')
+            medications = AddedMedication.query.all()
+            for medication in medications:
+                if medication.include is False:
+                    continue
+                writer.writerow([medication.name,
+                                 medication.regNumber,
+                                 medication.form,
+                                 medication.activeSubstance,
+                                 medication.prohibitedOUTCompetition,
+                                 medication.prohibitedINCompetition,
+                                 medication.prohibitedClass,
+                                 medication.notesLV,
+                                 medication.sportsINCompetitionLV,
+                                 medication.sportsOUTCompetitionLV,
+                                 medication.notesEN,
+                                 medication.sportsINCompetitionEN,
+                                 medication.sportsOUTCompetitionEN])
 
 
 class NotesFields(db.Model):

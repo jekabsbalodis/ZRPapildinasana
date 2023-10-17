@@ -1,6 +1,4 @@
 import requests
-from datetime import date
-import shutil
 
 
 def download_register():
@@ -14,8 +12,6 @@ def download_register():
 def download_register_delta(dateFrom):
     url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + \
         str(dateFrom)
-    # Pārlūkojot senus datus, lietotne neattēlo nākamo lapu, manuāli jānorāda īsāks laika periods
-    # url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=2022-12-27&d-to=2022-12-29'
     with requests.get(url) as r:
         with open('delta.xml', 'wb') as delta:
             delta.write(r.content)
@@ -29,4 +25,3 @@ def download_doping_substances():
     with requests.get(data.get('result').get('resources')[0].get('url')) as r:
         with open(fileName, 'wb') as delta:
             delta.write(r.content)
-    shutil.copyfile(fileName, date.today().strftime('%Y%m%d') + '_' + fileName)
