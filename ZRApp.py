@@ -23,3 +23,13 @@ def test(test_names):
     else:
         tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+# Schedule task to update Notes Fields table
+@app.cli.command()
+def scheduled():
+    '''Run scheduled task'''
+    from app import models
+    from app import downloadData
+    downloadData.download_doping_substances()
+    downloadData.download_register()
+    models.NotesFields.update_notes('HumanProducts.xml', 'antidopinga_vielas.csv')
