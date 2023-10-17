@@ -2,10 +2,34 @@
 {% block title %}<title>ZRApp - pārskatīt medikamentus</title>{% endblock %}
 
 {% block page_content %}
+
+{% if countUnchecked != 0 %}
+
+
 <h1 class="display-1">Pārskatīt medikamentus</h1>
 <hr>
 <p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienoti {{ count }} jauni medikamenti.</p>
 <p>Pievienoti šādi medikamenti.</p>
+
+{% else %}
+
+<h1 class="display-1">Pārskatīt medikamentus</h1>
+<hr>
+<div class="d-flex">
+    <div class="flex-grow-1">
+        <p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienoti {{ count }} jauni medikamenti.</p>
+        <p>Pievienoti šādi medikamenti.</p>
+    </div>
+    <div class="align-self-center">
+        <a class="btn btn-primary" href="{{ url_for('filePrepare.upload') }}" role="button">Saglabāt datus teksta
+            failā</a>
+    </div>
+</div>
+
+
+{%endif%}
+
+
 
 <div class="container">
     <div class="row row-cols-1 row-cols-md-2 
@@ -14,29 +38,30 @@
         <div class="col">
             {% if addedMedication.userChecked == True %}
             <div class="card text-bg-success">
-            {% else %}
-            <div class="card text-bg-warning">
-            {%endif%}
-                <div class="card-body">
-                    
+                {% else %}
+                <div class="card text-bg-warning">
+                    {%endif%}
+                    <div class="card-body">
+
                         <p class="card-title">
-                            Medikamenta nosaukums: 
+                            Medikamenta nosaukums:
                             <strong>{{ addedMedication.name }}</strong><br>
                             Aktīvā viela:
                             <strong>{{ addedMedication.activeSubstance}}</strong>
                         </p>
-                    
-                    <p class="card-text">
-                        Reģistrācijas numurs:
-                        {{ addedMedication.regNumber}}<br>
-                        Zāļu forma:
-                        {{ addedMedication.form}}
-                    </p>
-                    <a href="{{ url_for('filePrepare.checkMedication', regNumber=addedMedication.regNumber) }}" class="btn btn-secondary btn-sm stretched-link">Ievadīt informāciju</a>
+
+                        <p class="card-text">
+                            Reģistrācijas numurs:
+                            {{ addedMedication.regNumber}}<br>
+                            Zāļu forma:
+                            {{ addedMedication.form}}
+                        </p>
+                        <a href="{{ url_for('filePrepare.checkMedication', regNumber=addedMedication.regNumber) }}"
+                            class="btn btn-secondary btn-sm stretched-link">Ievadīt informāciju</a>
+                    </div>
                 </div>
             </div>
+            {%- endfor %}
         </div>
-        {%- endfor %}
     </div>
-</div>
-{% endblock %}
+    {% endblock %}

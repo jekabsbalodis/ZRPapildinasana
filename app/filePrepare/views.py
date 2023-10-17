@@ -31,7 +31,12 @@ def download():
 def reviewMedication():
     addedMedications = AddedMedication.query.all()
     count = len(addedMedications)
-    return render_template('filePrepare/reviewMedication.html', addedMedications=addedMedications, count=count)
+    uncheckedMedications = AddedMedication.query.filter_by(userChecked=False).all()
+    countUnchecked = len(uncheckedMedications)
+    return render_template('filePrepare/reviewMedication.html',
+                           addedMedications=addedMedications,
+                           count=count,
+                           countUnchecked=countUnchecked)
 
 
 @filePrepare.route('/checkMedication', methods=['GET', 'POST'])
@@ -60,3 +65,9 @@ def checkMedication():
         db.session.commit()
         return redirect(url_for('filePrepare.reviewMedication'))
     return render_template('filePrepare/checkMedication.html', form=form, medication=medication, notes=notes)
+
+
+@filePrepare.route('/upload', methods=['GET', 'POST'])
+@login_required
+def upload():
+    return render_template('filePrepare/upload.html')
