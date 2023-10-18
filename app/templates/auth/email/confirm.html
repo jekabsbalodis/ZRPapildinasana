@@ -1,7 +1,7 @@
 <p>Sveiks {{ user.username }}!</p>
 <p>Sveicināts <b>ZRApp</b>!</p>
 <p>Lai apstiprinātu savu lietotāja kontu, lūdzu atver šo <a href="{{ url_for('auth.confirm', token=token, _external=True) }}">saiti</a>.</p>
-<p>Ja saite nedarbojas, varat nokopēt šo adresi savā interneta pārlūka adreses logā:</p>
+<p>Ja saite nedarbojas, vari nokopēt šo adresi savā interneta pārlūka adreses logā:</p>
 <p>{{ url_for('auth.confirm', token=token, _external=True) }}</p>
 <p>Jūsu ZRApp komanda</p>
 <p><small>Lūdzu neatbildiet uz šo e-pastu, vēstules, kas nosūtītas uz šo e-pasta adresi netiek pārskatītas.</small></p>
