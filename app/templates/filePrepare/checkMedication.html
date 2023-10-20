@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %}<title>ZRApp - pievienot informāciju</title>{% endblock %}
+
+{% block page_content %}
+
+<h1 class="display-1">Informācijas pievienošana</h1>
+<hr>
+
+<div class="row">
+    <div class="col">{{ render_form(form, button_map={'include': 'primary', 'notInclude': 'warning'}) }}</div>
+    <div class="col">
+        <div class="sticky-top">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Medikamenta nosaukums:</td>
+                        <td><strong>{{ medication.name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Aktīvā viela:</td>
+                        <td><strong>{{ medication.activeSubstance}}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Reģistrācijas numurs:</td>
+                        <td>{{ medication.regNumber}}</td>
+                    </tr>
+                    <tr>
+                        <td>Zāļu forma:</td>
+                        <td><strong>{{ medication.form}}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--  -->
+            {% if notes %}
+            <p class="pt-5 px-5 fst-italic">Šī informācija var palīdzēt ievadīt informāciju par medikamenta lietošanu
+            </p>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>ATĶ kods:</td>
+                        <td><strong>{{ notes.atcCode }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Vai medikaments aizliegts ārpus sacensībām:</td>
+                        <td><strong>{{ notes.prohibitedOUTCompetition }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Vai medikaments ir aizliegts sacensību laikā?:</td>
+                        <td><strong>{{ notes.prohibitedINCompetition }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Kurai Aizliegto vielu un metožu saraksta klasei medikaments pieder?:</td>
+                        <td><strong>{{ notes.prohibitedClass }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Piezīmes par medikamenta lietošanu:</td>
+                        <td><strong>{{ notes.notesLV }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Piezīmes par medikamenta lietošanu (angliski):</td>
+                        <td><strong>{{ notes.notesEN }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts sacensību laikā:</td>
+                        <td><strong>{{ notes.sportsINCompetitionLV }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts sacensību laikā (angliski):</td>
+                        <td><strong>{{ notes.sportsINCompetitionEN }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts ārpus sacensībām:</td>
+                        <td><strong>{{ notes.sportsOUTCompetitionLV }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts ārpus sacensībām (angliski):</td>
+                        <td><strong>{{ notes.sportsOUTCompetitionEN }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--  -->
+            {% else %}
+            <p class="pt-5 px-5 fst-italic">Par līdzīgiem medikamentiem informācija līdz šim nav pievienota<br>
+                Lūdzu uzmanīgi pārbaudi pievienojamo informāciju</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

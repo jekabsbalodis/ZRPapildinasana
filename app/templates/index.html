@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}<title>ZRApp</title>{% endblock %}
+
+{% block page_content %}
+
+<h1 class="display-1">
+    Sveiks, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}svešiniek{%
+    endif %}!</h1>
+
+{% endblock %}

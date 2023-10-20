@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="lv">
+
+<head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+    {% block styles %}
+    <!-- Bootstrap CSS -->
+    {{ bootstrap.load_css() }}
+    {% endblock %}
+    {% block title %}
+    {% endblock %}
+    {% endblock %}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-lg">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">ZRApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('filePrepare.download') }}">Medikamentu datu
+                            atjaunošana</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Lietotāja konts
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.change_password') }}">Nomainīt
+                                    paroli</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.change_email_request') }}">Nomainīt
+                                    e-pasta adresi</a></li>
+                            {% if current_user.is_administrator() %}
+                            <li><a class="dropdown-item" href="{{ url_for('reg.register') }}">Reģistrēt jaunu
+                                    lietotāju</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Atvienoties</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li><a class="dropdown-item" href="{{ url_for('auth.login') }}">Pievienoties</a></li>
+                    {% endif %}
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-lg pt-5">
+        {% for message in get_flashed_messages() %}
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="container-lg">
+        <div class="m-5">
+            {% block page_content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    {% block scripts %}
+    {{ bootstrap.load_js() }}
+    {{ moment.include_moment() }}
+    {% endblock %}
+</body>
+
+</html>
