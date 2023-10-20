@@ -7,6 +7,7 @@ from flask_login import AnonymousUserMixin, UserMixin
 from . import db, login_manager
 from datetime import date
 import shutil
+import fileinput
 
 
 class Permission:
@@ -224,8 +225,8 @@ class AddedMedication(db.Model):
     def write_information(fileName):
         newFileName = date.today().strftime('%Y%m%d')+'_'+fileName
         shutil.copyfile(fileName, newFileName)
-        with open(newFileName, 'a', encoding='utf-8', newline='') as newFile:
-            writer = csv.writer(newFile, dialect='excel', delimiter=',')
+        with open(date.today().strftime('%Y%m%d')+'.csv', 'w', encoding='utf-8', newline='') as f:
+            writer = csv.writer(f, dialect='excel', delimiter=',')
             medications = AddedMedication.query.all()
             for medication in medications:
                 if medication.include is False:
@@ -243,6 +244,11 @@ class AddedMedication(db.Model):
                                  medication.notesEN,
                                  medication.sportsINCompetitionEN,
                                  medication.sportsOUTCompetitionEN])
+        with open(newFileName, 'a', encoding='utf-8', newline='') as f:
+            inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
+            f.writelines(inputLines)
+            f.writelines(inputLines)
+            f.writelines(inputLines)
 
 
 class NotesFields(db.Model):

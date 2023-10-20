@@ -1,11 +1,14 @@
 from flask_login import login_required
 from flask import render_template, flash, redirect, url_for, request
 import requests
-from .forms import DownloadForm, ReviewMedicationForm
+from .forms import DownloadForm, ReviewMedicationForm, UploadDataGovLVForm, UploadZVAFrom
 from . import filePrepare
 from .. import db
 from ..downloadData import download_register, download_register_delta, download_doping_substances
+from ..uploadData import upload_data_gov_lv, upload_zva
 from ..models import AddedMedication, NotesFields
+import csv
+from datetime import date
 
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
@@ -31,7 +34,8 @@ def download():
 def reviewMedication():
     addedMedications = AddedMedication.query.all()
     count = len(addedMedications)
-    uncheckedMedications = AddedMedication.query.filter_by(userChecked=False).all()
+    uncheckedMedications = AddedMedication.query.filter_by(
+        userChecked=False).all()
     countUnchecked = len(uncheckedMedications)
     return render_template('filePrepare/reviewMedication.html',
                            addedMedications=addedMedications,
@@ -67,7 +71,30 @@ def checkMedication():
     return render_template('filePrepare/checkMedication.html', form=form, medication=medication, notes=notes)
 
 
-@filePrepare.route('/upload', methods=['GET', 'POST'])
+@filePrepare.route('/uploadReview', methods=['GET', 'POST'])
 @login_required
-def upload():
-    return render_template('filePrepare/upload.html')
+def uploadReview():
+    AddedMedication.write_information('antidopinga_vielas.csv')
+    with open(date.today().strftime('%Y%m%d')+'.csv', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        return render_template('filePrepare/uploadReview.html', csv=reader)
+
+
+@filePrepare.route('/uploadFinished', methods=['GET', 'POST'])
+@login_required
+def uploadFinished():
+    zvaForm = UploadZVAFrom()
+    dataGovLVForm = UploadDataGovLVForm()
+    if zvaForm.submitZVA.data and zvaForm.validate():
+        upload_zva(userName=zvaForm.userName.data,
+                   passWord=zvaForm.passWord.data,
+                   ftpAddress=zvaForm.ftpAddress.data,
+                   ftpPort=zvaForm.ftpPort.data,
+                   fileName=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
+        flash('Dati ZVA serverī augšuplādēti')
+    if dataGovLVForm.submitDataGovLV.data and dataGovLVForm.validate():
+        upload_data_gov_lv(resourceID=dataGovLVForm.resourceID.data,
+                           apiKey=dataGovLVForm.apiKey.data,
+                           fileName=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
+        flash('Dati data.gov.lv serverī augšuplādēti')
+    return render_template('filePrepare/uploadFinished.html', zvaForm=zvaForm, dataGovLVForm=dataGovLVForm)
