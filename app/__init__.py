@@ -27,16 +27,20 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
 
+    if app.config['SSL_REDIRECT']:
+        from flask_sslify import SSLify
+        sslify = SSLify(app)
+
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
     from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix = '/auth')
-    
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
     from .reg import reg as reg_blueprint
-    app.register_blueprint(reg_blueprint, url_prefix = '/reg')
-    
+    app.register_blueprint(reg_blueprint, url_prefix='/reg')
+
     from .filePrepare import filePrepare as filePrepare_blueprint
-    app.register_blueprint(filePrepare_blueprint, url_prefix = '/filePrepare')
+    app.register_blueprint(filePrepare_blueprint, url_prefix='/filePrepare')
 
     return app

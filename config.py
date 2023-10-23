@@ -14,6 +14,7 @@ class Config:
     ZRAPP_MAIL_SENDER = 'ZRApp Admin <myhood@inbox.lv>'
     ZRAPP_ADMIN = os.environ.get('ZRAPP_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SSL_REDIRECT = False
     # BOOTSTRAP_BOOTSWATCH_THEME = 'cosmo'
 
     @staticmethod
@@ -36,6 +37,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+    SSL_REDIRECT = True
 
     @classmethod
     def init_app(cls, app):
@@ -59,6 +61,10 @@ class ProductionConfig(Config):
             secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
+
+        # handle reverse proxy server headers
+        from werkzeug.contrib.fixers import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app)
 
 
 config = {
