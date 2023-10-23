@@ -63,7 +63,10 @@ class ProductionConfig(Config):
         app.logger.addHandler(mail_handler)
 
         # handle reverse proxy server headers
-        from werkzeug.contrib.fixers import ProxyFix
+        try:
+            from werkzeug.middleware.proxy_fix import ProxyFix
+        except ImportError:
+            from werkzeug.contrib.fixers import ProxyFix
         app.wsgi_app = ProxyFix(app.wsgi_app)
 
 
