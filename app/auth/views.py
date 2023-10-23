@@ -66,7 +66,7 @@ def confirm(token):
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
-    send_email(current_user.email, 'Confirm Your Account',
+    send_email(current_user.email, 'Apstiprini savu lietotāja kontu',
                'auth/email/confirm', user=current_user, token=token)
     flash('Uz Jūsu e-pasta adresi nosūtīts jauns aicinājums apstiprināt to!')
     return redirect(url_for('main.index'))
