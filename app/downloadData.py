@@ -10,9 +10,7 @@ def download_register():
 
 
 def download_register_delta(dateFrom):
-    # url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + \
-    #     str(dateFrom)
-    url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=2022-12-26&d-to=2022-12-28'
+    url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + str(dateFrom)
     with requests.get(url) as r:
         with open('delta.xml', 'wb') as delta:
             delta.write(r.content)
