@@ -1,6 +1,6 @@
 import os
 import click
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 from app import create_app, db
 from app.models import User, Role, Permission
 
@@ -16,7 +16,7 @@ def make_shell_context():
 @app.cli.command()
 @click.argument('test_names', nargs=-1)
 def test(test_names):
-    """Run the unit tests."""
+    '''Run the unit tests.'''
     import unittest
     if test_names:
         tests = unittest.TestLoader().loadTestsFromNames(test_names)
@@ -24,12 +24,23 @@ def test(test_names):
         tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
-# Schedule task to update Notes Fields table
+
 @app.cli.command()
 def scheduled():
-    '''Run scheduled task'''
+    '''Run scheduled task.'''
+    # Schedule task to update Notes Fields table
     from app import models
     from app import downloadData
     downloadData.download_doping_substances()
     downloadData.download_register()
-    models.NotesFields.update_notes('HumanProducts.xml', 'antidopinga_vielas.csv')
+    models.NotesFields.update_notes(
+        'HumanProducts.xml', 'antidopinga_vielas.csv')
+
+
+@app.cli.command()
+def deploy():
+    '''Run deployment tasks'''
+    # migrate database to the latest version
+    upgrade()
+    # create or update user roles
+    Role.insert_roles()
