@@ -40,7 +40,6 @@ nosetests.xml
 
 # Virtual environment
 venv
-.flaskenv
 .env
 
 # XML files
