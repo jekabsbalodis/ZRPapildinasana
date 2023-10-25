@@ -66,7 +66,7 @@ class DockerConfig(ProductionConfig):
 
         # log to stderr
         import logging
-        from logging.handlers import StreamHandler
+        from logging import StreamHandler
         file_handler = StreamHandler()
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
