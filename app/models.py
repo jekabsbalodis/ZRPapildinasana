@@ -287,6 +287,8 @@ class NotesFields(db.Model):
                         atcCode = product.findtext('atc_code')
                         if atcCode in atcCodeChecked:
                             continue
+                        if NotesFields.query.filter_by(atcCode = atcCode).first():
+                            continue
                         prohibitedOUTCompetition = line[4]
                         prohibitedINCompetition = line[5]
                         prohibitedClass = line[6]
