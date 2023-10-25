@@ -94,6 +94,7 @@ config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
+    'pythonanywhere': PythonAnywhereConfig,
     'docker': DockerConfig,
 
     'default': DevelopmentConfig
