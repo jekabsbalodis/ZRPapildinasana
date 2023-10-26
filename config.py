@@ -1,17 +1,20 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT'))
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS').lower() in ['true', 'on', '1']
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS').lower() in [
+        'true', 'on', '1']
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ZRAPP_MAIL_SUBJECT_PREFIX = '[ZRApp]'
     ZRAPP_MAIL_SENDER = 'ZRApp Admin <myhood@inbox.lv>'
     ZRAPP_ADMIN = os.environ.get('ZRAPP_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SSL_REDIRECT = False
     # BOOTSTRAP_BOOTSWATCH_THEME = 'cosmo'
 
     @staticmethod
@@ -59,6 +62,21 @@ class ProductionConfig(Config):
         app.logger.addHandler(mail_handler)
 
 
+class PythonAnywhereConfig(ProductionConfig):
+    SSL_REDIRECT = True
+
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+        # log to stderr
+        import logging
+        from logging import StreamHandler
+        file_handler = StreamHandler()
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+
+
 class DockerConfig(ProductionConfig):
     @classmethod
     def init_app(cls, app):
@@ -76,6 +94,7 @@ config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
+    'pythonanywhere': PythonAnywhereConfig,
     'docker': DockerConfig,
 
     'default': DevelopmentConfig
