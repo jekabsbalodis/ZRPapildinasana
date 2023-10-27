@@ -266,38 +266,30 @@ class NotesFields(db.Model):
     sportsOUTCompetitionEN = db.Column(db.Text)
 
     @staticmethod
-    def update_notes(drugRegister, dopingRegister):
+    def update_notes2(drugRegister, dopingRegister):
         with open(drugRegister, encoding='utf-8') as dr:
             allStuff = ET.parse(dr)
         products = allStuff.findall('products/product')
 
-        lineChecked = []
-        atcCodeChecked = []
-
         with open(dopingRegister, encoding='utf-8', newline='') as dr:
             reader = csv.reader(dr, dialect='excel', delimiter=',')
-            for line in reader:
-                if line[1] == 'authorisation_no':
+            rows = list(reader)
+            for product in products:
+                authorisationNo = product.findtext('authorisation_no')
+                atcCode = product.findtext('atc_code')
+                if NotesFields.query.filter_by(atcCode=atcCode).first():
                     continue
-                for product in products:
-                    if line[1] in lineChecked:
-                        continue
-                    authorisationNo = product.findtext('authorisation_no')
-                    if line[1] == authorisationNo:
-                        atcCode = product.findtext('atc_code')
-                        if atcCode in atcCodeChecked:
-                            continue
-                        if NotesFields.query.filter_by(atcCode = atcCode).first():
-                            continue
-                        prohibitedOUTCompetition = line[4]
-                        prohibitedINCompetition = line[5]
-                        prohibitedClass = line[6]
-                        notesLV = line[7]
-                        sportsINCompetitionLV = line[8]
-                        sportsOUTCompetitionLV = line[9]
-                        notesEN = line[10]
-                        sportsINCompetitionEN = line[11]
-                        sportsOUTCompetitionEN = line[12]
+                for row in rows:
+                    if authorisationNo in row:
+                        prohibitedOUTCompetition = row[4]
+                        prohibitedINCompetition = row[5]
+                        prohibitedClass = row[6]
+                        notesLV = row[7]
+                        sportsINCompetitionLV = row[8]
+                        sportsOUTCompetitionLV = row[9]
+                        notesEN = row[10]
+                        sportsINCompetitionEN = row[11]
+                        sportsOUTCompetitionEN = row[12]
                         m = NotesFields(atcCode=atcCode,
                                         prohibitedOUTCompetition=prohibitedOUTCompetition,
                                         prohibitedINCompetition=prohibitedINCompetition,
@@ -310,5 +302,4 @@ class NotesFields(db.Model):
                                         sportsOUTCompetitionEN=sportsOUTCompetitionEN)
                         db.session.add(m)
                         db.session.commit()
-                        lineChecked.append(line[1])
-                        atcCodeChecked.append(atcCode)
+                        rows.remove(row)
