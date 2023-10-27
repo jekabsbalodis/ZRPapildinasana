@@ -266,7 +266,7 @@ class NotesFields(db.Model):
     sportsOUTCompetitionEN = db.Column(db.Text)
 
     @staticmethod
-    def update_notes2(drugRegister, dopingRegister):
+    def update_notes(drugRegister, dopingRegister):
         with open(drugRegister, encoding='utf-8') as dr:
             allStuff = ET.parse(dr)
         products = allStuff.findall('products/product')
