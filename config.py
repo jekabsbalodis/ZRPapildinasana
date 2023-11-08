@@ -78,6 +78,9 @@ class PythonAnywhereConfig(ProductionConfig):
 
 
 class DockerConfig(ProductionConfig):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'db/data-dev.sqlite')
+
     @classmethod
     def init_app(cls, app):
         ProductionConfig.init_app(app)
