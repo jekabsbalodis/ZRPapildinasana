@@ -1,4 +1,5 @@
 from datetime import date
+from datetime import timedelta
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, DateField, SelectField, StringField, TextAreaField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Length
@@ -6,7 +7,7 @@ from wtforms.validators import DataRequired, Length
 
 class DownloadForm(FlaskForm):
     dateFrom = DateField('Pēdējās datu atjaunošanas datums',
-                         default=date.today, format='%Y-%m-%d', validators=[DataRequired()])
+                         default=date.today() - timedelta(days=1), format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Apstiprināt')
 
 

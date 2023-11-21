@@ -247,8 +247,6 @@ class AddedMedication(db.Model):
         with open(newFileName, 'a', encoding='utf-8', newline='') as f:
             inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
             f.writelines(inputLines)
-            f.writelines(inputLines)
-            f.writelines(inputLines)
 
 
 class NotesFields(db.Model):
