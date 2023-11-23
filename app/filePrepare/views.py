@@ -9,6 +9,7 @@ from ..uploadData import upload_data_gov_lv, upload_zva
 from ..models import AddedMedication, NotesFields
 import csv
 from datetime import date
+from datetime import timedelta
 
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
@@ -21,8 +22,9 @@ def download():
         0].get('last_modified')[:10]
     if form.validate_on_submit():
         dateFrom = form.dateFrom.data
+        dateTo = (date.today() - timedelta(days = 1)).strftime('%Y-%m-%d')
         AddedMedication.insert_medication(
-            download_register_delta(dateFrom=dateFrom), download_register())
+            download_register_delta(dateFrom=dateFrom, dateTo=dateTo), download_register())
         download_doping_substances()
         flash('Faili lejuplādēti')
         return redirect(url_for('filePrepare.reviewMedication'))

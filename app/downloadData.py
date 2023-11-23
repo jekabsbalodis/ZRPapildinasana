@@ -9,8 +9,8 @@ def download_register():
     return 'HumanProducts.xml'
 
 
-def download_register_delta(dateFrom):
-    url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + str(dateFrom)
+def download_register_delta(dateFrom, dateTo):
+    url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + str(dateFrom) + '&d-to=' + str(dateTo)
     with requests.get(url) as r:
         with open('delta.xml', 'wb') as delta:
             delta.write(r.content)
