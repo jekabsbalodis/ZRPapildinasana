@@ -1,5 +1,4 @@
 import requests
-from getpass import getpass
 import ftplib
 
 

@@ -58,7 +58,7 @@ def checkMedication():
         if form.include.data:
             medication.prohibitedOUTCompetition = form.prohibitedOUTCompetition.data
             medication.prohibitedINCompetition = form.prohibitedINCompetition.data
-            medication.prohibitedClass = form.prohibitedClass.data
+            medication.prohibitedClass = form.prohibitedClass.data.upper()
             medication.notesLV = form.notesLV.data
             medication.notesEN = form.notesEN.data
             medication.sportsINCompetitionLV = form.sportsINCompetitionLV.data

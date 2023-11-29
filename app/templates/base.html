@@ -34,6 +34,10 @@
                         <a class="nav-link" href="{{ url_for('filePrepare.download') }}">Medikamentu datu
                             atjaunošana</a>
                     </li>
+                    <li>
+                        <a class="nav-link" href="{{ url_for('medSearch.start') }}">Meklēt medikamentus
+                            pievienošanai</a>
+                    </li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -81,7 +85,6 @@
 
     {% block scripts %}
     {{ bootstrap.load_js() }}
-    {{ moment.include_moment() }}
     {% endblock %}
 </body>
 
