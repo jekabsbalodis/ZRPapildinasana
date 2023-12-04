@@ -8,7 +8,7 @@ from ..downloadData import download_register, download_register_delta, download_
 from ..uploadData import upload_data_gov_lv, upload_zva
 from ..models import AddedMedication, NotesFields
 import csv
-from datetime import date
+from datetime import date, datetime
 from datetime import timedelta
 
 
@@ -18,17 +18,17 @@ def download():
     form = DownloadForm()
     url = 'https://data.gov.lv/dati/lv/api/3/action/package_show?id=medikamenti-kas-satur-dopinga-vielas'
     data = requests.get(url).json()
-    lastUpdate = data.get('result').get('resources')[
-        0].get('last_modified')[:10]
+    lastUpdate = data.get('result').get('resources')[0].get('last_modified')[:10]
+    lastUpdateFormatted = datetime.strptime(lastUpdate, '%Y-%m-%d').date().strftime('%d/%m/%Y')
     if form.validate_on_submit():
         dateFrom = form.dateFrom.data
-        dateTo = (date.today() - timedelta(days = 1)).strftime('%Y-%m-%d')
+        dateTo = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
         AddedMedication.insert_medication(
             download_register_delta(dateFrom=dateFrom, dateTo=dateTo), download_register())
         download_doping_substances()
         flash('Faili lejuplādēti')
         return redirect(url_for('filePrepare.reviewMedication'))
-    return render_template('filePrepare/download.html', form=form, lastUpdate=lastUpdate)
+    return render_template('filePrepare/download.html', form=form, lastUpdate=lastUpdateFormatted)
 
 
 @filePrepare.route('/reviewMedication', methods=['GET', 'POST'])
