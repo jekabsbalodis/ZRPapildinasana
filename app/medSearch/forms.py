@@ -4,5 +4,5 @@ from wtforms.validators import DataRequired
 
 
 class AtcSearchForm(FlaskForm):
-    atcCode = SearchField('Meklēt pēc ATC koda', validators=[DataRequired()])
+    atcCode = SearchField('Meklēt pēc ATĶ koda', validators=[DataRequired()])
     searchAtcCode = SubmitField('Meklēt')
