@@ -1,7 +1,7 @@
 from flask_login import login_required
 from flask import render_template, flash, redirect, url_for, request
 import requests
-from .forms import DownloadForm, ReviewMedicationForm, UploadDataGovLVForm, UploadZVAFrom
+from .forms import DownloadForm, ReviewMedicationForm, UploadDataGovLVForm, UploadZVAForm
 from . import filePrepare
 from .. import db
 from ..downloadData import download_register, download_register_delta, download_doping_substances
@@ -85,7 +85,7 @@ def uploadReview():
 @filePrepare.route('/uploadFinished', methods=['GET', 'POST'])
 @login_required
 def uploadFinished():
-    zvaForm = UploadZVAFrom()
+    zvaForm = UploadZVAForm()
     dataGovLVForm = UploadDataGovLVForm()
     if zvaForm.submitZVA.data and zvaForm.validate():
         upload_zva(userName=zvaForm.userName.data,

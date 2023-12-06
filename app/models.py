@@ -259,6 +259,7 @@ class SearchedMedication(db.Model):
     activeSubstance = db.Column(db.Text)
     include = db.Column(db.Boolean, default=False)
     userChecked = db.Column(db.Boolean, default=False)
+    doping = db.Column(db.Boolean, default=False)
     prohibitedOUTCompetition = db.Column(db.String(15))
     prohibitedINCompetition = db.Column(db.String(15))
     prohibitedClass = db.Column(db.String(10))
@@ -285,44 +286,57 @@ class SearchedMedication(db.Model):
                 atcCode = product.findtext('atc_code')
                 form = product.findtext('pharmaceutical_form_lv')
                 activeSubstance = product.findtext('active_substance')
-                with open('antidopinga_vielas.csv', encoding='utf-8') as df:
-                    if regNumber in df.read():
-                        include = False
-                        userChecked = True
-                    else:
-                        include = None
-                        userChecked = None
-                m = SearchedMedication(name=name, regNumber=regNumber, atcCode=atcCode, form=form,
-                                       activeSubstance=activeSubstance, include=include, userChecked=userChecked)
+                m = SearchedMedication(name=name, regNumber=regNumber, atcCode=atcCode,
+                                       form=form, activeSubstance=activeSubstance)
                 db.session.add(m)
                 db.session.commit()
+        searchedMed = SearchedMedication.query.all()
+        for med in searchedMed:
+            with open('antidopinga_vielas.csv', encoding='utf-8') as df:
+                df_csv = csv.reader(df)
+                for line in df_csv:
+                    if med.regNumber in line:
+                        med.include = False
+                        med.userChecked = True
+                        med.doping = True
+                        med.prohibitedOUTCompetition = line[4]
+                        med.prohibitedINCompetition = line[5]
+                        med.prohibitedClass = line[6]
+                        med.notesLV = line[7]
+                        med.sportsINCompetitionLV = line[8]
+                        med.sportsOUTCompetitionLV = line[9]
+                        med.notesEN = line[10]
+                        med.sportsINCompetitionEN = line[11]
+                        med.sportsOUTCompetitionEN = line[12]
+                        db.session.commit()
 
-    # @staticmethod
-    # def write_information(fileName):
-    #     newFileName = date.today().strftime('%Y%m%d')+'_'+fileName
-    #     shutil.copyfile(fileName, newFileName)
-    #     with open(date.today().strftime('%Y%m%d')+'.csv', 'w', encoding='utf-8', newline='') as f:
-    #         writer = csv.writer(f, dialect='excel', delimiter=',')
-    #         medications = AddedMedication.query.all()
-    #         for medication in medications:
-    #             if medication.include is False:
-    #                 continue
-    #             writer.writerow([medication.name,
-    #                              medication.regNumber,
-    #                              medication.form,
-    #                              medication.activeSubstance,
-    #                              medication.prohibitedOUTCompetition,
-    #                              medication.prohibitedINCompetition,
-    #                              medication.prohibitedClass,
-    #                              medication.notesLV,
-    #                              medication.sportsINCompetitionLV,
-    #                              medication.sportsOUTCompetitionLV,
-    #                              medication.notesEN,
-    #                              medication.sportsINCompetitionEN,
-    #                              medication.sportsOUTCompetitionEN])
-    #     with open(newFileName, 'a', encoding='utf-8', newline='') as f:
-    #         inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
-    #         f.writelines(inputLines)
+
+    @staticmethod
+    def write_information(fileName):
+        newFileName = date.today().strftime('%Y%m%d')+'_'+fileName
+        shutil.copyfile(fileName, newFileName)
+        with open(date.today().strftime('%Y%m%d')+'.csv', 'w', encoding='utf-8', newline='') as f:
+            writer = csv.writer(f, dialect='excel', delimiter=',')
+            medications = SearchedMedication.query.all()
+            for medication in medications:
+                if medication.include is False:
+                    continue
+                writer.writerow([medication.name,
+                                 medication.regNumber,
+                                 medication.form,
+                                 medication.activeSubstance,
+                                 medication.prohibitedOUTCompetition,
+                                 medication.prohibitedINCompetition,
+                                 medication.prohibitedClass,
+                                 medication.notesLV,
+                                 medication.sportsINCompetitionLV,
+                                 medication.sportsOUTCompetitionLV,
+                                 medication.notesEN,
+                                 medication.sportsINCompetitionEN,
+                                 medication.sportsOUTCompetitionEN])
+        with open(newFileName, 'a', encoding='utf-8', newline='') as f:
+            inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
+            f.writelines(inputLines)
 
 
 class NotesFields(db.Model):

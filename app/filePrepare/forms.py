@@ -40,7 +40,7 @@ class ReviewMedicationForm(FlaskForm):
     notInclude = SubmitField('Neiekļaut nododamajos datos')
 
 
-class UploadZVAFrom(FlaskForm):
+class UploadZVAForm(FlaskForm):
     userName = StringField('Lietotāja vārds', validators=[DataRequired()])
     passWord = PasswordField('Parole', validators=[DataRequired()])
     ftpAddress = StringField('Servera adrese', validators=[DataRequired()])
