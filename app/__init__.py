@@ -42,5 +42,8 @@ def create_app(config_name):
 
     from .filePrepare import filePrepare as filePrepare_blueprint
     app.register_blueprint(filePrepare_blueprint, url_prefix='/filePrepare')
+    
+    from .medSearch import medSearch as medSearch_blueprint
+    app.register_blueprint(medSearch_blueprint, url_prefix='/medSearch')
 
     return app

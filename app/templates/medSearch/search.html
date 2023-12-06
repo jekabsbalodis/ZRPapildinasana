@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+
+{% block title %}<title>ZRApp - Meklēt medikamentus pievienošanai</title>{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .spinner-wrapper {
+        text-align: left;
+        opacity: 0;
+        display: none;
+        transition: all 0.2;
+    }
+</style>
+{% endblock %}
+
+{% block page_content %}
+
+<h1 class="display-1">Meklēt medikamentus pievienošanai</h1>
+<hr>
+{{ render_form(form, extra_classes='col-6', render_kw={'onsubmit': 'return loading()'}) }}
+<div class="spinner-wrapper">
+    <div class="spinner-border m-3" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+    const spinnerWrapperEl = document.querySelector('.spinner-wrapper');
+    function loading() {
+        spinnerWrapperEl.style.opacity = '1';
+        spinnerWrapperEl.style.display = 'unset'
+    }    
+</script>
+{% endblock %}
