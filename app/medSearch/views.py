@@ -17,7 +17,7 @@ def search():
     form = AtcSearchForm()
     download_doping_substances()
     if form.validate_on_submit():
-        SearchedMedication.insert_medication(download_register(), form.atcCode.data)
+        SearchedMedication.insert_medication(download_register(), form.atcCode.data.upper())
         flash('Meklēšana pēc ATĶ koda veikta')
         return redirect(url_for('medSearch.reviewMedication'))
     return render_template('medSearch/search.html', form=form)
