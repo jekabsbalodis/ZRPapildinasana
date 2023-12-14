@@ -43,9 +43,12 @@ def checkMedication():
     form = ReviewMedicationForm()
     medication = SearchedMedication.query.filter_by(regNumber=regNumber).first()
     atcCode = medication.atcCode
+    if medication.regNumber.startswith('EU/'):
+        bulkEdit = True
+    else:
+        bulkEdit = False
     notes = NotesFields.query.filter_by(atcCode=atcCode).first()
     if form.validate_on_submit():
-        medication.userChecked = True
         if form.include.data:
             medication.prohibitedOUTCompetition = form.prohibitedOUTCompetition.data
             medication.prohibitedINCompetition = form.prohibitedINCompetition.data
@@ -57,11 +60,35 @@ def checkMedication():
             medication.sportsOUTCompetitionLV = form.sportsOUTCompetitionLV.data
             medication.sportsOUTCompetitionEN = form.sportsOUTCompetitionEN.data
             medication.include = True
+            medication.userChecked = True
+            db.session.commit()
+        if form.bulkInclude.data:
+            regNo = medication.regNumber.split('/')
+            regNo.pop()
+            regNoStr = '/'.join(str(x) for x in regNo)
+            neededForm = medication.form
+            medications = SearchedMedication.query.filter(
+                SearchedMedication.regNumber.contains(regNoStr), SearchedMedication.form == neededForm).all()
+            for medication in medications:
+                medication.prohibitedOUTCompetition = form.prohibitedOUTCompetition.data
+                medication.prohibitedINCompetition = form.prohibitedINCompetition.data
+                medication.prohibitedClass = form.prohibitedClass.data.upper()
+                medication.notesLV = form.notesLV.data
+                medication.notesEN = form.notesEN.data
+                medication.sportsINCompetitionLV = form.sportsINCompetitionLV.data
+                medication.sportsINCompetitionEN = form.sportsINCompetitionEN.data
+                medication.sportsOUTCompetitionLV = form.sportsOUTCompetitionLV.data
+                medication.sportsOUTCompetitionEN = form.sportsOUTCompetitionEN.data
+                medication.include = True
+                medication.userChecked = True
+                db.session.commit()
         if form.notInclude.data:
             medication.include = False
-        db.session.commit()
+            medication.userChecked = True
+            db.session.commit()
         return redirect(url_for('medSearch.reviewMedication'))
-    return render_template('medSearch/checkMedication.html', form=form, medication=medication, notes=notes)
+    return render_template('medSearch/checkMedication.html',
+                           form=form, medication=medication, notes=notes, bulkEdit=bulkEdit)
 
 
 @medSearch.route('/uploadReview', methods=['GET', 'POST'])

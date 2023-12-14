@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'bootstrap5/form.html' import render_form %}
+{% from 'bootstrap5/form.html' import render_form_row %}
 
 {% block title %}<title>ZRApp - pievienot informāciju</title>{% endblock %}
 
@@ -9,7 +9,25 @@
 <hr>
 
 <div class="row">
-    <div class="col">{{ render_form(form, button_map={'include': 'primary', 'notInclude': 'warning'}) }}</div>
+    <div class="col">
+        <form method="post">
+            {{ form.csrf_token() }}
+            {{ render_form_row([form.prohibitedOUTCompetition]) }}
+            {{ render_form_row([form.prohibitedINCompetition]) }}
+            {{ render_form_row([form.prohibitedClass]) }}
+            {{ render_form_row([form.notesLV]) }}
+            {{ render_form_row([form.notesEN]) }}
+            {{ render_form_row([form.sportsINCompetitionLV]) }}
+            {{ render_form_row([form.sportsINCompetitionEN]) }}
+            {{ render_form_row([form.sportsOUTCompetitionLV]) }}
+            {{ render_form_row([form.sportsOUTCompetitionEN]) }}
+            {{ render_form_row([form.include], button_map={'include': 'primary'}, row_class='p-2 row') }}
+            {% if bulkEdit %}
+            {{ render_form_row([form.bulkInclude], button_map={'bulkInclude': 'danger'}, row_class='p-2 row') }}
+            {% endif %}
+            {{ render_form_row([form.notInclude], button_map={'notInclude': 'warning'}, row_class='p-2 row') }}
+        </form>
+    </div>
     <div class="col">
         <div class="sticky-top">
             <table class="table">
