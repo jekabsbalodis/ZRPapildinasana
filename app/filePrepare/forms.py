@@ -4,20 +4,23 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, DateField, SelectField, StringField, TextAreaField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Length
 
-url = 'https://data.gov.lv/dati/lv/api/3/action/package_show?id=medikamenti-kas-satur-dopinga-vielas'
-data = requests.get(url).json()
-lastUpdate = data.get('result').get('resources')[0].get('last_modified')[:10]
-lastUpdateFormatted = datetime.strptime(lastUpdate, '%Y-%m-%d').date()
 
 
 class DownloadForm(FlaskForm):
+    # url = 'https://data.gov.lv/dati/lv/api/3/action/package_show?id=medikamenti-kas-satur-dopinga-vielas'
+    # data = requests.get(url).json()
+    # lastUpdate = data.get('result').get('resources')[0].get('last_modified')[:10]
+    # lastUpdateFormatted = datetime.strptime(lastUpdate, '%Y-%m-%d').date()
+    with open('.lastUpdate', encoding='utf-8') as f:
+        lastUpdate = f.read()
+    lastUpdateFormatted = datetime.strptime(lastUpdate, '%Y-%m-%d').date()
     dateFrom = DateField('No kura datuma pārskatīt medikamentus?',
                          default=lastUpdateFormatted,
                          format='%Y-%m-%d',
                          validators=[DataRequired()])
-                        #  render_kw={'oninvalid': 'this.setCustomValidity("Ievadi datumu")'})
-                        #  Atribūts formas laukam, lai nomainītu attēlojamo tekstu,
-                        #  ja tiek mēģināts iesniegt tukšu lauku
+    #  render_kw={'oninvalid': 'this.setCustomValidity("Ievadi datumu")'})
+    #  Atribūts formas laukam, lai nomainītu attēlojamo tekstu,
+    #  ja tiek mēģināts iesniegt tukšu lauku
     submit = SubmitField('Apstiprināt')
 
 
@@ -36,7 +39,8 @@ class ReviewMedicationForm(FlaskForm):
     sportsOUTCompetitionLV = TextAreaField(
         'Ja medikaments aizliegts tikai noteiktos sporta veidos ārpus sacensībām, norādi šos sporta veidus')
     sportsOUTCompetitionEN = TextAreaField('Norādi šo informāciju angliski')
-    include = SubmitField('Apstiprināt')
+    include = SubmitField('Iekļaut')
+    bulkInclude = SubmitField('Iekļaut visus līdzīgus medikamentus')
     notInclude = SubmitField('Neiekļaut nododamajos datos')
 
 
