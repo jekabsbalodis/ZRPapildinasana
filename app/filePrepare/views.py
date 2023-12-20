@@ -97,7 +97,7 @@ def checkMedication():
             medication.include = False
             medication.userChecked = True
             db.session.commit()
-        return redirect(url_for('filePrepare.reviewMedication'))
+        return redirect(url_for('filePrepare.reviewMedication', _anchor = medication.regNumber))
     return render_template('filePrepare/checkMedication.html',
                            form=form, medication=medication, notes=notes, bulkEdit=bulkEdit)
 
