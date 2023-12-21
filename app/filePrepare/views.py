@@ -1,15 +1,14 @@
+import csv
+from datetime import date
+from datetime import timedelta
 from flask_login import login_required
 from flask import render_template, flash, redirect, url_for, request
-import requests
 from .forms import DownloadForm, ReviewMedicationForm, UploadDataGovLVForm, UploadZVAForm
 from . import filePrepare
 from .. import db
 from ..downloadData import download_register, download_register_delta, download_doping_substances
 from ..uploadData import upload_data_gov_lv, upload_zva
 from ..models import AddedMedication, NotesFields
-import csv
-from datetime import date
-from datetime import timedelta
 
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
@@ -20,7 +19,7 @@ def download():
     # data = requests.get(url).json()
     # lastUpdate = data.get('result').get('resources')[0].get('last_modified')[:10]
     # lastUpdateFormatted = datetime.strptime(lastUpdate, '%Y-%m-%d').date().strftime('%d/%m/%Y')
-    with open ('.lastUpdate', encoding='utf-8') as f:
+    with open('.lastUpdate', encoding='utf-8') as f:
         lastUpdate = f.read()
     if form.validate_on_submit():
         dateFrom = form.dateFrom.data
@@ -97,7 +96,7 @@ def checkMedication():
             medication.include = False
             medication.userChecked = True
             db.session.commit()
-        return redirect(url_for('filePrepare.reviewMedication'))
+        return redirect(url_for('filePrepare.reviewMedication', _anchor=medication.regNumber))
     return render_template('filePrepare/checkMedication.html',
                            form=form, medication=medication, notes=notes, bulkEdit=bulkEdit)
 
@@ -130,4 +129,6 @@ def uploadFinished():
                            apiKey=dataGovLVForm.apiKey.data,
                            fileName=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
         flash('Dati data.gov.lv serverī augšuplādēti')
-    return render_template('filePrepare/uploadFinished.html', zvaForm=zvaForm, dataGovLVForm=dataGovLVForm)
+    return render_template('filePrepare/uploadFinished.html',
+                           zvaForm=zvaForm,
+                           dataGovLVForm=dataGovLVForm)

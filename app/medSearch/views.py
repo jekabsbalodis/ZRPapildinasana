@@ -17,7 +17,8 @@ def search():
     form = AtcSearchForm()
     download_doping_substances()
     if form.validate_on_submit():
-        SearchedMedication.insert_medication(download_register(), form.atcCode.data.upper())
+        SearchedMedication.insert_medication(
+            download_register(), form.atcCode.data.upper())
         flash('Meklēšana pēc ATĶ koda veikta')
         return redirect(url_for('medSearch.reviewMedication'))
     return render_template('medSearch/search.html', form=form)
@@ -28,7 +29,8 @@ def search():
 def reviewMedication():
     searchedMedications = SearchedMedication.query.all()
     count = len(searchedMedications)
-    uncheckedMedications = SearchedMedication.query.filter_by(userChecked=False).all()
+    uncheckedMedications = SearchedMedication.query.filter_by(
+        userChecked=False).all()
     countUnchecked = len(uncheckedMedications)
     return render_template('medSearch/reviewMedication.html',
                            searchedMedications=searchedMedications,
@@ -41,7 +43,8 @@ def reviewMedication():
 def checkMedication():
     regNumber = request.args.get('regNumber')
     form = ReviewMedicationForm()
-    medication = SearchedMedication.query.filter_by(regNumber=regNumber).first()
+    medication = SearchedMedication.query.filter_by(
+        regNumber=regNumber).first()
     atcCode = medication.atcCode
     if medication.regNumber.startswith('EU/'):
         bulkEdit = True
@@ -68,7 +71,8 @@ def checkMedication():
             regNoStr = '/'.join(str(x) for x in regNo)
             neededForm = medication.form
             medications = SearchedMedication.query.filter(
-                SearchedMedication.regNumber.contains(regNoStr), SearchedMedication.form == neededForm).all()
+                SearchedMedication.regNumber.contains(regNoStr),
+                SearchedMedication.form == neededForm).all()
             for medication in medications:
                 medication.prohibitedOUTCompetition = form.prohibitedOUTCompetition.data
                 medication.prohibitedINCompetition = form.prohibitedINCompetition.data
@@ -86,7 +90,7 @@ def checkMedication():
             medication.include = False
             medication.userChecked = True
             db.session.commit()
-        return redirect(url_for('medSearch.reviewMedication'))
+        return redirect(url_for('medSearch.reviewMedication', _anchor=medication.regNumber))
     return render_template('medSearch/checkMedication.html',
                            form=form, medication=medication, notes=notes, bulkEdit=bulkEdit)
 
@@ -117,4 +121,6 @@ def uploadFinished():
                            apiKey=dataGovLVForm.apiKey.data,
                            fileName=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
         flash('Dati data.gov.lv serverī augšuplādēti')
-    return render_template('medSearch/uploadFinished.html', zvaForm=zvaForm, dataGovLVForm=dataGovLVForm)
+    return render_template('medSearch/uploadFinished.html',
+                           zvaForm=zvaForm,
+                           dataGovLVForm=dataGovLVForm)
