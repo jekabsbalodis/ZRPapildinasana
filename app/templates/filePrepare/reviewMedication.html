@@ -55,9 +55,9 @@
                 {% else %}
                 class="card text-bg-warning">
                 {% endif %}
-                <div class="card-body">
+                <div id="{{ addedMedication.regNumber}}" class="card-body">
 
-                    <p id="{{ addedMedication.regNumber}}" class="card-title">
+                    <p class="card-title">
                         Medikamenta nosaukums:
                         <strong>{{ addedMedication.name }}</strong><br>
                         Aktīvā viela:
