@@ -1,10 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, DateField, SelectField, StringField, TextAreaField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Length
+from ..lastUpdate import lastUpdate
+
 
 
 class DownloadForm(FlaskForm):
     dateFrom = DateField('No kura datuma pārskatīt medikamentus?',
+                         default=lastUpdate,
                          format='%Y-%m-%d',
                          validators=[DataRequired()])
     #  render_kw={'oninvalid': 'this.setCustomValidity("Ievadi datumu")'})
