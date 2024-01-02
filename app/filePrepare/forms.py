@@ -1,21 +1,10 @@
-from datetime import datetime
-import requests
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, DateField, SelectField, StringField, TextAreaField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Length
 
 
-
 class DownloadForm(FlaskForm):
-    # url = 'https://data.gov.lv/dati/lv/api/3/action/package_show?id=medikamenti-kas-satur-dopinga-vielas'
-    # data = requests.get(url).json()
-    # lastUpdate = data.get('result').get('resources')[0].get('last_modified')[:10]
-    # lastUpdateFormatted = datetime.strptime(lastUpdate, '%Y-%m-%d').date()
-    with open('.lastUpdate', encoding='utf-8') as f:
-        lastUpdate = f.read()
-    lastUpdateFormatted = datetime.strptime(lastUpdate, '%Y-%m-%d').date()
     dateFrom = DateField('No kura datuma pārskatīt medikamentus?',
-                         default=lastUpdateFormatted,
                          format='%Y-%m-%d',
                          validators=[DataRequired()])
     #  render_kw={'oninvalid': 'this.setCustomValidity("Ievadi datumu")'})

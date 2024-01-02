@@ -1,6 +1,5 @@
 import csv
-from datetime import date
-from datetime import timedelta
+from datetime import date, timedelta
 from flask_login import login_required
 from flask import render_template, flash, redirect, url_for, request
 from .forms import DownloadForm, ReviewMedicationForm, UploadDataGovLVForm, UploadZVAForm
