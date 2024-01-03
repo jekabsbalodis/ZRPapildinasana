@@ -65,7 +65,7 @@
                         Zāļu forma:
                         {{ searchedMedication.form}}
                     </p>
-                    {% if (searchedMedication.doping == False) %}
+                    {% if (searchedMedication.doping == False) or (current_user.is_administrator()) %}
                     <a href="{{ url_for('medSearch.checkMedication', regNumber=searchedMedication.regNumber) }}"
                         class="btn btn-primary btn-sm">Ievadīt informāciju</a>
                     {% endif %}
