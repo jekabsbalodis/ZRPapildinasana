@@ -8,6 +8,7 @@ from . import db, login_manager
 from datetime import date
 import shutil
 import fileinput
+import pandas as pd
 
 
 class Permission:
@@ -247,6 +248,9 @@ class AddedMedication(db.Model):
         with open(newFileName, 'a', encoding='utf-8', newline='') as f:
             inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
             f.writelines(inputLines)
+        df = pd.read_csv(newFileName)
+        df = df.drop_duplicates(subset=['authorisation_no'], keep='last')
+        df.to_csv(newFileName, index=False)
 
 
 class SearchedMedication(db.Model):
@@ -337,6 +341,9 @@ class SearchedMedication(db.Model):
         with open(newFileName, 'a', encoding='utf-8', newline='') as f:
             inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
             f.writelines(inputLines)
+        df = pd.read_csv(newFileName)
+        df = df.drop_duplicates(subset=['authorisation_no'], keep='last')
+        df.to_csv(newFileName, index=False)
 
 
 class NotesFields(db.Model):
