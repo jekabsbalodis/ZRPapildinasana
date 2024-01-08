@@ -1,4 +1,5 @@
 import csv
+import fileinput
 from datetime import date, timedelta
 from flask_login import login_required
 from flask import render_template, flash, redirect, url_for, request
@@ -21,6 +22,8 @@ def download():
         AddedMedication.insert_medication(
             download_register_delta(dateFrom=dateFrom, dateTo=dateTo), download_register())
         download_doping_substances()
+        with open('.lastUpdate', 'w', encoding='utf-8') as f:
+            f.write(date.today().strftime('%Y-%m-%d'))
         flash('Faili lejuplādēti')
         return redirect(url_for('filePrepare.reviewMedication'))
     return render_template('filePrepare/download.html', form=form, lastUpdate=lastUpdate().strftime('%Y-%m-%d'))
@@ -99,8 +102,6 @@ def checkMedication():
 @login_required
 def uploadReview():
     AddedMedication.write_information('antidopinga_vielas.csv')
-    with open('.lastUpdate', 'w', encoding='utf-8') as f:
-        f.write(date.today().strftime('%Y-%m-%d'))
     with open(date.today().strftime('%Y%m%d')+'.csv', encoding='utf-8') as f:
         reader = csv.reader(f)
         return render_template('filePrepare/uploadReview.html', csv=reader)
