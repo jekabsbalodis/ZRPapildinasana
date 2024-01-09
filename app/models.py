@@ -246,7 +246,8 @@ class AddedMedication(db.Model):
                                  medication.sportsINCompetitionEN,
                                  medication.sportsOUTCompetitionEN])
         with open(newFileName, 'a', encoding='utf-8', newline='') as f:
-            inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
+            inputLines = fileinput.input(
+                date.today().strftime('%Y%m%d')+'.csv')
             f.writelines(inputLines)
         df = pd.read_csv(newFileName)
         df = df.drop_duplicates(subset=['authorisation_no'], keep='last')
@@ -275,7 +276,7 @@ class SearchedMedication(db.Model):
     sportsOUTCompetitionEN = db.Column(db.Text)
 
     @staticmethod
-    def insert_medication(file, atc):
+    def insert_medication(file, search_term):
         SearchedMedication.query.delete()  # Start with an empty table to avoid duplicates
         db.session.commit()
         with open(file, encoding='utf-8') as f:
@@ -284,7 +285,7 @@ class SearchedMedication(db.Model):
         for product in products:
             if SearchedMedication.query.filter_by(regNumber=product.findtext('authorisation_no')).first():
                 continue
-            if atc in product.findtext('atc_code'):
+            if (search_term in product.findtext('atc_code')) or (search_term in product.findtext('active_substance').lower()) or (search_term in product.findtext('authorisation_no')):
                 name = product.findtext('medicine_name')
                 regNumber = product.findtext('authorisation_no')
                 atcCode = product.findtext('atc_code')
@@ -314,7 +315,6 @@ class SearchedMedication(db.Model):
                         med.sportsOUTCompetitionEN = line[12]
                         db.session.commit()
 
-
     @staticmethod
     def write_information(fileName):
         newFileName = date.today().strftime('%Y%m%d')+'_'+fileName
@@ -339,7 +339,8 @@ class SearchedMedication(db.Model):
                                  medication.sportsINCompetitionEN,
                                  medication.sportsOUTCompetitionEN])
         with open(newFileName, 'a', encoding='utf-8', newline='') as f:
-            inputLines = fileinput.input(date.today().strftime('%Y%m%d')+'.csv')
+            inputLines = fileinput.input(
+                date.today().strftime('%Y%m%d')+'.csv')
             f.writelines(inputLines)
         df = pd.read_csv(newFileName)
         df = df.drop_duplicates(subset=['authorisation_no'], keep='last')

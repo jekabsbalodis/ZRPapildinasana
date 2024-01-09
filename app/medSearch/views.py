@@ -1,7 +1,7 @@
 from flask_login import login_required
 from flask import render_template, redirect, url_for, flash, request
 from . import medSearch
-from .forms import AtcSearchForm
+from .forms import AtcSearchForm, NameSearchForm, RegSearchForm
 from ..filePrepare.forms import ReviewMedicationForm, UploadZVAForm, UploadDataGovLVForm
 from ..models import SearchedMedication, NotesFields
 from ..downloadData import download_register, download_doping_substances
@@ -14,14 +14,26 @@ import csv
 @medSearch.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
-    form = AtcSearchForm()
+    form_atc = AtcSearchForm()
+    form_name = NameSearchForm()
+    form_reg = RegSearchForm()
     download_doping_substances()
-    if form.validate_on_submit():
+    if form_atc.searchAtcCode.data and form_atc.validate():
         SearchedMedication.insert_medication(
-            download_register(), form.atcCode.data.upper())
+            download_register(), search_term=form_atc.atcCode.data.upper())
         flash('Meklēšana pēc ATĶ koda veikta')
         return redirect(url_for('medSearch.reviewMedication'))
-    return render_template('medSearch/search.html', form=form)
+    if form_name.searchName.data and form_name.validate():
+        SearchedMedication.insert_medication(
+            download_register(), search_term=form_name.name.data.lower())
+        flash('Meklēšana pēc aktīvas vielas nosaukuma veikta')
+        return redirect(url_for('medSearch.reviewMedication'))
+    if form_reg.searchRegNumber.data and form_reg.validate():
+        SearchedMedication.insert_medication(
+            download_register(), search_term=form_reg.regNumber.data.upper())
+        flash('Meklēšana pēc reģistrācijas numura veikta')
+        return redirect(url_for('medSearch.reviewMedication'))
+    return render_template('medSearch/search.html', form_atc=form_atc, form_name=form_name, form_reg=form_reg)
 
 
 @medSearch.route('/reviewMedication', methods=['GET', 'POST'])
