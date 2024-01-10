@@ -7,7 +7,7 @@
 
 <h1 class="display-1">Informācijas pievienošana</h1>
 <hr>
-
+{% if (admin_required == False) or ((admin_required == True) and (current_user.is_administrator())) %}
 <div class="row">
     <div class="col">
         <form method="post">
@@ -106,4 +106,7 @@
         </div>
     </div>
 </div>
+{% else %}
+<p>Lai rediģētu šo medikamentu nepieciešamas administratora tiesības</p>
+{% endif %}
 {% endblock %}

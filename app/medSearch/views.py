@@ -54,6 +54,11 @@ def reviewMedication():
 @login_required
 def checkMedication():
     regNumber = request.args.get('regNumber')
+    with open('antidopinga_vielas.csv', encoding='utf-8') as f:
+        if regNumber in f.read():
+            admin_required = True
+        else:
+            admin_required = False
     form = ReviewMedicationForm()
     medication = SearchedMedication.query.filter_by(
         regNumber=regNumber).first()
@@ -104,7 +109,10 @@ def checkMedication():
             db.session.commit()
         return redirect(url_for('medSearch.reviewMedication', _anchor=medication.regNumber))
     return render_template('medSearch/checkMedication.html',
-                           form=form, medication=medication, notes=notes, bulkEdit=bulkEdit)
+                           form=form, medication=medication,
+                           notes=notes,
+                           bulkEdit=bulkEdit,
+                           admin_required=admin_required)
 
 
 @medSearch.route('/uploadReview', methods=['GET', 'POST'])
