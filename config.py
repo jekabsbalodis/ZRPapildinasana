@@ -3,6 +3,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
+    '''ZRApp base configuration'''
     SECRET_KEY = os.environ.get('SECRET_KEY')
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT'))
@@ -23,18 +24,21 @@ class Config:
 
 
 class DevelopmentConfig(Config):
+    '''ZRApp development configuration'''
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
 
 class TestingConfig(Config):
+    '''ZRApp testing configuration'''
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
         'sqlite://'
 
 
 class ProductionConfig(Config):
+    '''ZRApp production configuration'''
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
@@ -63,6 +67,7 @@ class ProductionConfig(Config):
 
 
 class PythonAnywhereConfig(ProductionConfig):
+    '''ZRApp configuration for PythonAnywhere'''
     SSL_REDIRECT = True
 
     @classmethod
@@ -78,6 +83,7 @@ class PythonAnywhereConfig(ProductionConfig):
 
 
 class DockerConfig(ProductionConfig):
+    '''ZRapp configuration for Docker deployment'''
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'db/data.sqlite')
 

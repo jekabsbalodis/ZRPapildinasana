@@ -68,19 +68,19 @@
             </div>
         </div>
     </nav>
-    <div class="container-lg pt-5">
-        {% for message in get_flashed_messages() %}
-        <div class="alert alert-primary alert-dismissible fade show" role="alert">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
     <div class="container-lg">
-        <div class="m-5">
-            {% block page_content %}
-            {% endblock %}
+        <div class="p-2">
+            {% for message in get_flashed_messages() %}
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
+    </div>
+    <div class="container-lg p-2">
+        {% block page_content %}
+        {% endblock %}
     </div>
 
     {% block scripts %}

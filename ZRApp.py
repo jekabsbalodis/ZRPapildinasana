@@ -35,7 +35,7 @@ def test(test_names):
 
 @app.cli.command()
 def scheduled():
-    '''Run scheduled task.'''
+    '''Run scheduled tasks'''
     # Schedule task to update Notes Fields table
     from app import models
     from app import downloadData
