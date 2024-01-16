@@ -4,8 +4,8 @@ from . import medSearch
 from .forms import AtcSearchForm, NameSearchForm, RegSearchForm
 from ..filePrepare.forms import ReviewMedicationForm, UploadZVAForm, UploadDataGovLVForm
 from ..models import SearchedMedication, NotesFields
-from ..downloadData import download_register, download_doping_substances
-from ..uploadData import upload_zva, upload_data_gov_lv
+from ..download_data import download_register, download_doping_substances
+from ..upload_data import upload_zva, upload_data_gov_lv
 from .. import db
 from datetime import date
 import csv

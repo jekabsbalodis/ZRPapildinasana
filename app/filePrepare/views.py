@@ -6,10 +6,10 @@ from flask import render_template, flash, redirect, url_for, request
 from .forms import DownloadForm, ReviewMedicationForm, UploadDataGovLVForm, UploadZVAForm
 from . import filePrepare
 from .. import db
-from ..downloadData import download_register, download_register_delta, download_doping_substances
-from ..uploadData import upload_data_gov_lv, upload_zva
+from ..download_data import download_register, download_register_delta, download_doping_substances
+from ..upload_data import upload_data_gov_lv, upload_zva
 from ..models import AddedMedication, NotesFields
-from ..lastUpdate import lastUpdate
+from ..last_update import last_update
 
 
 @filePrepare.route('/download', methods=['GET', 'POST'])
@@ -26,7 +26,7 @@ def download():
             f.write(date.today().strftime('%Y-%m-%d'))
         flash('Faili lejuplādēti')
         return redirect(url_for('filePrepare.reviewMedication'))
-    return render_template('filePrepare/download.html', form=form, lastUpdate=lastUpdate().strftime('%Y-%m-%d'))
+    return render_template('filePrepare/download.html', form=form, last_update=last_update().strftime('%Y-%m-%d'))
 
 
 @filePrepare.route('/reviewMedication', methods=['GET', 'POST'])

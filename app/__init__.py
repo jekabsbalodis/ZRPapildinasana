@@ -29,7 +29,7 @@ def create_app(config_name):
 
     if app.config['SSL_REDIRECT']:
         from flask_sslify import SSLify
-        sslify = SSLify(app)    
+        sslify = SSLify(app)
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
@@ -42,7 +42,7 @@ def create_app(config_name):
 
     from .filePrepare import filePrepare as filePrepare_blueprint
     app.register_blueprint(filePrepare_blueprint, url_prefix='/filePrepare')
-    
+
     from .medSearch import medSearch as medSearch_blueprint
     app.register_blueprint(medSearch_blueprint, url_prefix='/medSearch')
 

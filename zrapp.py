@@ -1,3 +1,5 @@
+'''Application for preparing the necessary file
+containing information about medications' use in sports'''
 import os
 from dotenv import load_dotenv
 
@@ -38,9 +40,9 @@ def scheduled():
     '''Run scheduled tasks'''
     # Schedule task to update Notes Fields table
     from app import models
-    from app import downloadData
-    downloadData.download_doping_substances()
-    downloadData.download_register()
+    from app import download_data
+    download_data.download_doping_substances()
+    download_data.download_register()
     models.NotesFields.update_notes(
         'HumanProducts.xml', 'antidopinga_vielas.csv')
 

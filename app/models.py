@@ -1,22 +1,25 @@
+'''Defining models for ZRApp'''
 import xml.etree.ElementTree as ET
 import csv
+from datetime import date
+import shutil
+import fileinput
+import pandas as pd
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
 from flask_login import AnonymousUserMixin, UserMixin
 from . import db, login_manager
-from datetime import date
-import shutil
-import fileinput
-import pandas as pd
 
 
 class Permission:
+    '''Permissions for ZRApp user roles'''
     WRITE = 1
     ADMIN = 2
 
 
 class Role(db.Model):
+    '''Model for ZRApp user roles'''
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
@@ -31,6 +34,7 @@ class Role(db.Model):
 
     @staticmethod
     def insert_roles():
+        '''Insert user roles when creating new users'''
         roles = {
             'User': [Permission.WRITE],
             'Administrator': [Permission.WRITE, Permission.ADMIN],
@@ -48,17 +52,21 @@ class Role(db.Model):
         db.session.commit()
 
     def add_permission(self, perm):
+        '''Add new permissions to user'''
         if not self.has_permission(perm):
             self.permissions += perm
 
     def remove_permission(self, perm):
+        '''Remove permissions from user'''
         if self.has_permission(perm):
             self.permissions -= perm
 
     def reset_permissions(self):
+        '''Remove all permission from user'''
         self.permissions = 0
 
     def has_permission(self, perm):
+        '''Check if user has certain permissions'''
         return self.permissions & perm == perm
 
     def __repr__(self):
@@ -66,6 +74,7 @@ class Role(db.Model):
 
 
 class User(UserMixin, db.Model):
+    '''Model for ZRApp users'''
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
