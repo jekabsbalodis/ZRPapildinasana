@@ -44,11 +44,11 @@
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('filePrepare.download') }}">Medikamentu datu
+                        <a class="nav-link" href="{{ url_for('file_prepare.download') }}">Medikamentu datu
                             atjaunošana</a>
                     </li>
                     <li>
-                        <a class="nav-link" href="{{ url_for('medSearch.search') }}">Meklēt medikamentus
+                        <a class="nav-link" href="{{ url_for('med_search.search') }}">Meklēt medikamentus
                             pievienošanai</a>
                     </li>
                     {% endif %}

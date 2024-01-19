@@ -3,18 +3,15 @@
 
 {% block page_content %}
 
-{% if countUnchecked != 0 %}
+{% if count_unchecked != 0 %}
 <h1 class="display-1">Pārskatīt medikamentus</h1>
 <hr>
 {% if count % 10 == 1 and count % 100 != 11 %}
-<p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienots {{ count }} jauns medikaments.</p>
-<p>Pievienoti šādi medikamenti.</p>
+<p>Atrasts {{ count }} jauns medikaments.</p>
 {% elif count % 100 == 11 %}
-<p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienoti {{ count }} jauni medikamenti.</p>
-<p>Pievienoti šādi medikamenti.</p>
+<p>Atrasti {{ count }} jauni medikamenti.</p>
 {% else %}
-<p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienoti {{ count }} jauni medikamenti.</p>
-<p>Pievienoti šādi medikamenti.</p>
+<p>Atrasti {{ count }} jauni medikamenti.</p>
 {% endif %}
 
 {% else %}
@@ -23,18 +20,15 @@
 <div class="d-flex">
     <div class="flex-grow-1">
         {% if count % 10 == 1 and count % 100 != 11 %}
-        <p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienots {{ count }} jauns medikaments.</p>
-        <p>Pievienoti šādi medikamenti.</p>
+        <p>Atrasts {{ count }} jauns medikaments.</p>
         {% elif count % 100 == 11 %}
-        <p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienoti {{ count }} jauni medikamenti.</p>
-        <p>Pievienoti šādi medikamenti.</p>
+        <p>Atrasti {{ count }} jauni medikamenti.</p>
         {% else %}
-        <p>Kopš pēdējās datu atjaunošanas, Latvijas Zāļu reģistrā pievienoti {{ count }} jauni medikamenti.</p>
-        <p>Pievienoti šādi medikamenti.</p>
+        <p>Atrasti {{ count }} jauni medikamenti.</p>
         {% endif %}
     </div>
     <div class="align-self-center">
-        <a class="btn btn-primary" href="{{ url_for('filePrepare.uploadReview') }}" role="button">Saglabāt datus teksta
+        <a class="btn btn-primary" href="{{ url_for('med_search.upload_review') }}" role="button">Saglabāt datus teksta
             failā</a>
     </div>
 </div>
@@ -42,35 +36,37 @@
 
 <div class="container">
     <div class="row row-cols-1 row-cols-lg-3 g-2 mt-3">
-        {%- for addedMedication in addedMedications %}
+        {%- for searched_medication in searched_medications %}
         <div class="col">
-            <div {% if ((addedMedication.userChecked==True) and (addedMedication.include==True)) %}
+            <div {% if ((searched_medication.userChecked==True) and (searched_medication.include==True)) %}
                 class="card h-100 text-bg-success">
-                {% elif ((addedMedication.userChecked == True) and (addedMedication.include == False)) %}
+                {% elif ((searched_medication.userChecked == True) and (searched_medication.include == False)) %}
                 class="card h-100 border-success">
                 {% else %}
                 class="card h-100 text-bg-warning">
                 {% endif %}
-                <a id="{{ addedMedication.regNumber}}"
+                <a id="{{ searched_medication.regNumber}}"
                     style="display: block; position: relative; top: -50px; visibility: hidden;"></a>
                 <div class="card-body">
                     <p class="card-title">
                         Medikamenta nosaukums:
-                        <strong>{{ addedMedication.name }}</strong><br>
+                        <strong>{{ searched_medication.name }}</strong><br>
                         Aktīvā viela:
-                        <strong>{{ addedMedication.activeSubstance}}</strong>
+                        <strong>{{ searched_medication.activeSubstance}}</strong>
                     </p>
                     <p class="card-text">
                         Reģistrācijas numurs:
-                        {{ addedMedication.regNumber}}<br>
+                        {{ searched_medication.regNumber}}<br>
                         Zāļu forma:
-                        {{ addedMedication.form}}
+                        {{ searched_medication.form}}
                     </p>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ url_for('filePrepare.checkMedication', regNumber=addedMedication.regNumber) }}"
+                    {% if (searched_medication.doping == False) or (current_user.is_administrator()) %}
+                    <a href="{{ url_for('med_search.check_medication', reg_number=searched_medication.regNumber) }}"
                         class="btn btn-primary btn-sm">Ievadīt informāciju</a>
-                    {% if addedMedication.userChecked == True %}
+                    {% endif %}
+                    {% if searched_medication.userChecked == True %}
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
                         data-bs-target="#modal{{ loop.index }}">
@@ -94,63 +90,68 @@
                                                 <td>
                                                     Vai medikaments ir aizliegts ārpus sacensībām?</td>
                                                 <td>
-                                                    <strong>{{ addedMedication.prohibitedOUTCompetition }}</strong>
+                                                    <strong>{{ searched_medication.prohibitedOUTCompetition }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     Vai medikaments ir aizliegts sacensību laikā</td>
                                                 <td>
-                                                    <strong>{{ addedMedication.prohibitedINCompetition}}</strong>
+                                                    <strong>{{ searched_medication.prohibitedINCompetition }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     Aizliegto vielu un metožu saraksta klase</td>
                                                 <td>
-                                                    <strong>{{ addedMedication.prohibitedClass }}</strong>
+                                                    <strong>{{ searched_medication.prohibitedClass }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     Piezīmes par medikamenta lietošanu</td>
                                                 <td>
-                                                    <strong>{{ addedMedication.notesLV }}</strong>
+                                                    <strong>{{ searched_medication.notesLV }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    Piezīmes angliski</td>
+                                                    Piezīmes angliski
+                                                </td>
                                                 <td>
-                                                    <strong>{{ addedMedication.notesEN }}</strong>
+                                                    <strong>{{ searched_medication.notesEN }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    Sporta veidi, kuros aizliegts sacensību laikā</td>
+                                                    Sporta veidi, kuros aizliegts sacensību laikā
+                                                </td>
                                                 <td>
-                                                    <strong>{{ addedMedication.sportsINCompetitionLV }}</strong>
+                                                    <strong>{{ searched_medication.sportsINCompetitionLV }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    Šie sporta veidi angliski</td>
+                                                    Šie sporta veidi angliski
+                                                </td>
                                                 <td>
-                                                    <strong>{{ addedMedication.sportsINCompetitionEN }}</strong>
+                                                    <strong>{{ searched_medication.sportsINCompetitionEN }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    Sporta veidi, kuros aizliegts ārpus sacensībām</td>
+                                                    Sporta veidi, kuros aizliegts ārpus sacensībām
+                                                </td>
                                                 <td>
-                                                    <strong>{{ addedMedication.sportsOUTCompetitionLV }}</strong>
+                                                    <strong>{{ searched_medication.sportsOUTCompetitionLV }} </strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    Šie sporta veidi angliski</td>
+                                                    Šie sporta veidi angliski
+                                                </td>
                                                 <td>
-                                                    <strong>{{ addedMedication.sportsOUTCompetitionEN }}</strong>
+                                                    <strong>{{ searched_medication.sportsOUTCompetitionEN }}</strong>
                                                 </td>
                                             </tr>
                                         </tbody>

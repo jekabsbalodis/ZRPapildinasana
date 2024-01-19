@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-reg = Blueprint('reg', __name__)
+med_search = Blueprint('med_search', __name__)
 
 from . import views

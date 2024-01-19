@@ -1,15 +1,17 @@
+'''View functions for pages related to authentication'''
 from flask import render_template, redirect, request, url_for, flash
 from flask_login import fresh_login_required, login_user, logout_user, login_required, current_user
 from . import auth
 from .. import db
 from ..models import User
 from ..email import send_email
-from .forms import LoginForm, ChangePasswordForm,\
+from .forms import LoginForm, ChangePasswordForm, \
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 
 
 @auth.before_app_request
 def before_request():
+    '''Redirect unconfirmed users'''
     if current_user.is_authenticated \
             and not current_user.confirmed \
             and request.endpoint \
@@ -20,6 +22,7 @@ def before_request():
 
 @auth.route('/unconfirmed')
 def unconfirmed():
+    '''View for users who are unconfirmed'''
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('auth/unconfirmed.html')
@@ -27,15 +30,16 @@ def unconfirmed():
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    '''Function for login view'''
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            next = request.args.get('next')
-            if next is None or not next.startswith('/'):
-                next = url_for('main.index')
-            return redirect(next)
+            next_page = request.args.get('next')
+            if next_page is None or not next.startswith('/'):
+                next_page = url_for('main.index')
+            return redirect(next_page)
         flash('Nepareizs lietotāja vārds vai parole')
     return render_template('auth/login.html', form=form)
 
@@ -43,6 +47,7 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
+    '''Function for user logout'''
     logout_user()
     flash('Jūs esat atslēdzies no sistēmas')
     return redirect(url_for('main.index'))
@@ -51,31 +56,35 @@ def logout():
 @auth.route('/confirm/<token>')
 @login_required
 def confirm(token):
+    '''Function for user confirmation view'''
     if current_user.confirmed:
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
         db.session.commit()
         flash('Paldies, ka apstiprināji savu e-pasta adresi!')
     else:
-        flash(
-            'Saite e-pasta adreses apstiprināšanai ir nederīga vai tai ir beidzies termiņš')
+        flash('Saite e-pasta adreses apstiprināšanai ir nederīga vai tai ir beidzies termiņš')
     return redirect(url_for('main.index'))
 
 
 @auth.route('/confirm')
 @login_required
 def resend_confirmation():
+    '''Function to request confirmation resend'''
     token = current_user.generate_confirmation_token()
-    send_email(current_user.email, 'Apstiprini savu lietotāja kontu',
-               'auth/email/confirm', user=current_user, token=token)
+    send_email(current_user.email,
+               'Apstiprini savu lietotāja kontu',
+               'auth/email/confirm',
+               user=current_user, token=token)
     flash('Uz Jūsu e-pasta adresi nosūtīts jauns aicinājums apstiprināt to!')
     return redirect(url_for('main.index'))
 
 
-@auth.route('/change-password', methods=['GET', 'POST'])
+@auth.route('/change_password', methods=['GET', 'POST'])
 @login_required
 @fresh_login_required
 def change_password():
+    '''Function for user password change view'''
     form = ChangePasswordForm()
     if form.validate_on_submit():
         if current_user.verify_password(form.old_password.data):
@@ -91,6 +100,7 @@ def change_password():
 
 @auth.route('/reset', methods=['GET', 'POST'])
 def password_reset_request():
+    '''Function for password reset request view'''
     if not current_user.is_anonymous:
         return redirect(url_for('main.index'))
     form = PasswordResetRequestForm()
@@ -98,9 +108,11 @@ def password_reset_request():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user:
             token = user.generate_reset_token()
-            send_email(user.email, 'Atiestatīt paroli',
+            send_email(user.email,
+                       'Atiestatīt paroli',
                        'auth/email/reset_password',
-                       user=user, token=token)
+                       user=user,
+                       token=token)
         flash('Jums ir nosūtīts e-pasts ar instrukciju, kā atiestatīt Jūsu paroli')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', form=form)
@@ -108,6 +120,7 @@ def password_reset_request():
 
 @auth.route('/reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
+    '''Function for password reset form'''
     if not current_user.is_anonymous:
         return redirect(url_for('main.index'))
     form = PasswordResetForm()
@@ -125,6 +138,7 @@ def password_reset(token):
 @login_required
 @fresh_login_required
 def change_email_request():
+    '''Function for entering new email before changing it'''
     form = ChangeEmailForm()
     if form.validate_on_submit():
         if current_user.verify_password(form.password.data):
@@ -144,6 +158,7 @@ def change_email_request():
 @auth.route('/change_email/<token>')
 @login_required
 def change_email(token):
+    '''Function for changing email in database'''
     if current_user.change_email(token):
         db.session.commit()
         flash('Jūsu e-pasta adrese ir nomainīta')

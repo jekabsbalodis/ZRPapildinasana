@@ -40,10 +40,10 @@ def create_app(config_name):
     from .reg import reg as reg_blueprint
     app.register_blueprint(reg_blueprint, url_prefix='/reg')
 
-    from .filePrepare import filePrepare as filePrepare_blueprint
-    app.register_blueprint(filePrepare_blueprint, url_prefix='/filePrepare')
+    from .file_prepare import file_prepare as file_prepare_blueprint
+    app.register_blueprint(file_prepare_blueprint, url_prefix='/file_prepare')
 
-    from .medSearch import medSearch as medSearch_blueprint
-    app.register_blueprint(medSearch_blueprint, url_prefix='/medSearch')
+    from .med_search import med_search as med_search_blueprint
+    app.register_blueprint(med_search_blueprint, url_prefix='/med_search')
 
     return app
