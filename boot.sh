@@ -1,4 +1,4 @@
 #!/bin/bash
 source venv/bin/activate
 flask deploy
-exec gunicorn -b :5000 --access-logfile - --error-logfile - ZRApp:app
+exec gunicorn -b :5000 --access-logfile - --error-logfile - zrapp:app

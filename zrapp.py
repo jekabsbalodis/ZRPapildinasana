@@ -1,3 +1,5 @@
+'''Application for preparing the necessary file
+containing information about medications' use in sports'''
 import os
 from dotenv import load_dotenv
 
@@ -18,7 +20,7 @@ migrate = Migrate(app, db)
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db, User=User, Role=Role, Permission=Permission)
+    return {'db': db, 'User': User, 'Role': Role, 'Permission': Permission}
 
 
 @app.cli.command()
@@ -35,12 +37,12 @@ def test(test_names):
 
 @app.cli.command()
 def scheduled():
-    '''Run scheduled task.'''
+    '''Run scheduled tasks'''
     # Schedule task to update Notes Fields table
     from app import models
-    from app import downloadData
-    downloadData.download_doping_substances()
-    downloadData.download_register()
+    from app import download_data
+    download_data.download_doping_substances()
+    download_data.download_register()
     models.NotesFields.update_notes(
         'HumanProducts.xml', 'antidopinga_vielas.csv')
 

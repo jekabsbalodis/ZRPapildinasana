@@ -13,6 +13,19 @@
     {% block styles %}
     <!-- Bootstrap CSS -->
     {{ bootstrap.load_css() }}
+    <style>
+        .spinner-wrapper {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            top: 40%;
+            left: 0px;
+            opacity: 0;
+            display: none;
+            transition: all 1s ease-in-out;
+        }
+    </style>
     {% endblock %}
     {% block title %}
     {% endblock %}
@@ -31,11 +44,11 @@
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('filePrepare.download') }}">Medikamentu datu
+                        <a class="nav-link" href="{{ url_for('file_prepare.download') }}">Medikamentu datu
                             atjaunošana</a>
                     </li>
                     <li>
-                        <a class="nav-link" href="{{ url_for('medSearch.search') }}">Meklēt medikamentus
+                        <a class="nav-link" href="{{ url_for('med_search.search') }}">Meklēt medikamentus
                             pievienošanai</a>
                     </li>
                     {% endif %}
@@ -63,28 +76,37 @@
                     <li><a class="dropdown-item" href="{{ url_for('auth.login') }}">Pievienoties</a></li>
                     {% endif %}
                 </ul>
-                </li>
-                </ul>
             </div>
         </div>
     </nav>
-    <div class="container-lg pt-5">
-        {% for message in get_flashed_messages() %}
-        <div class="alert alert-primary alert-dismissible fade show" role="alert">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
     <div class="container-lg">
-        <div class="m-5">
-            {% block page_content %}
-            {% endblock %}
+        <div class="p-2">
+            {% for message in get_flashed_messages() %}
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
+    </div>
+    <div class="container-lg p-2">
+        {% block page_content %}
+        {% endblock %}
     </div>
 
     {% block scripts %}
     {{ bootstrap.load_js() }}
+    <script type="text/javascript">
+        const spinnerWrapperEl = document.querySelector('.spinner-wrapper');
+        const wholePageEl = document.querySelector('.whole-page')
+        function loading() {
+            spinnerWrapperEl.style.opacity = '1';
+            spinnerWrapperEl.style.display = 'unset';
+            wholePageEl.style.transition = 'opacity 1s ease-in-out'
+            wholePageEl.style.opacity = '0.5'
+            wholePageEl.style.pointerEvents = 'none'
+        }    
+    </script>
     {% endblock %}
 </body>
 

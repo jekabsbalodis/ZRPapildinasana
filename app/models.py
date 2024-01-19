@@ -1,22 +1,25 @@
+'''Defining models for ZRApp'''
 import xml.etree.ElementTree as ET
 import csv
+from datetime import date
+import shutil
+import fileinput
+import pandas as pd
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
 from flask_login import AnonymousUserMixin, UserMixin
 from . import db, login_manager
-from datetime import date
-import shutil
-import fileinput
-import pandas as pd
 
 
 class Permission:
+    '''Permissions for ZRApp user roles'''
     WRITE = 1
     ADMIN = 2
 
 
 class Role(db.Model):
+    '''Model for ZRApp user roles'''
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
@@ -31,6 +34,7 @@ class Role(db.Model):
 
     @staticmethod
     def insert_roles():
+        '''Insert user roles when creating new users'''
         roles = {
             'User': [Permission.WRITE],
             'Administrator': [Permission.WRITE, Permission.ADMIN],
@@ -48,17 +52,21 @@ class Role(db.Model):
         db.session.commit()
 
     def add_permission(self, perm):
+        '''Add new permissions to user'''
         if not self.has_permission(perm):
             self.permissions += perm
 
     def remove_permission(self, perm):
+        '''Remove permissions from user'''
         if self.has_permission(perm):
             self.permissions -= perm
 
     def reset_permissions(self):
+        '''Remove all permission from user'''
         self.permissions = 0
 
     def has_permission(self, perm):
+        '''Check if user has certain permissions'''
         return self.permissions & perm == perm
 
     def __repr__(self):
@@ -66,6 +74,7 @@ class Role(db.Model):
 
 
 class User(UserMixin, db.Model):
+    '''Model for ZRApp users'''
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
@@ -91,13 +100,16 @@ class User(UserMixin, db.Model):
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
+        '''Verifiy user's password'''
         return check_password_hash(self.password_hash, password)
 
     def generate_confirmation_token(self):
+        '''Generate token for user confirmation'''
         s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'confirm': self.id})
 
     def confirm(self, token, expiration=3600):
+        '''Verify user confirmation function works'''
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token, max_age=expiration)
@@ -110,11 +122,13 @@ class User(UserMixin, db.Model):
         return True
 
     def generate_reset_token(self):
+        '''Generate token for users' password reset'''
         s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'reset': self.id})
 
     @staticmethod
     def reset_password(token, new_password, expiration=3600):
+        '''Reset users' password'''
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token, max_age=expiration)
@@ -128,10 +142,12 @@ class User(UserMixin, db.Model):
         return True
 
     def generate_email_change_token(self, new_email):
+        '''Generate token for users' email change'''
         s = Serializer(current_app.config['SECRET_KEY'])
         return s.dumps({'change_email': self.id, 'new_email': new_email})
 
     def change_email(self, token, expiration=3600):
+        '''Change user's email'''
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token, max_age=expiration)
@@ -175,6 +191,7 @@ def load_user(user_id):
 
 
 class AddedMedication(db.Model):
+    '''Model for medication that has been recently included in human medicines' register'''
     __tablename__ = 'added_medication'
     id = db.Column(db.Integer, primary_key=True)
     atcCode = db.Column(db.String(10))
@@ -195,37 +212,43 @@ class AddedMedication(db.Model):
     sportsOUTCompetitionEN = db.Column(db.Text)
 
     @staticmethod
-    def insert_medication(deltaFile, file):
+    def insert_medication(delta_file, file):
+        '''Function to create new products in database'''
         AddedMedication.query.delete()  # Start with an empty table to avoid duplicates
         db.session.commit()
-        with open(deltaFile, encoding='utf-8') as df:
-            allStuffDelta = ET.parse(df)
-        productsDelta = allStuffDelta.findall('meds/med')
+        with open(delta_file, encoding='utf-8') as df:
+            all_stuff_delta = ET.parse(df)
+        products_delta = all_stuff_delta.findall('meds/med')
         with open(file, encoding='utf-8') as f:
-            allStuff = ET.parse(f)
-        products = allStuff.findall('products/product')
-        productsDeltaChecked = []
-        for productDelta in productsDelta:
+            all_stuff = ET.parse(f)
+        products = all_stuff.findall('products/product')
+        products_delta_checked = []
+        for product_delta in products_delta:
             for product in products:
-                if productDelta.findtext('reg_number') in productsDeltaChecked:
+                if product_delta.findtext('reg_number') in products_delta_checked:
                     continue
-                if productDelta.findtext('reg_number') == product.findtext('authorisation_no'):
-                    name = productDelta.findtext('med_name')
-                    regNumber = productDelta.findtext('reg_number')
-                    atcCode = product.findtext('atc_code')
+                if product_delta.findtext('reg_number') == product.findtext('authorisation_no'):
+                    name = product_delta.findtext('med_name')
+                    reg_number = product_delta.findtext('reg_number')
+                    atc_code = product.findtext('atc_code')
                     form = product.findtext('pharmaceutical_form_lv')
-                    activeSubstance = product.findtext('active_substance')
+                    active_substance = product.findtext('active_substance')
                     m = AddedMedication(
-                        name=name, regNumber=regNumber, atcCode=atcCode, form=form, activeSubstance=activeSubstance)
+                        name=name,
+                        regNumber=reg_number,
+                        atcCode=atc_code,
+                        form=form,
+                        activeSubstance=active_substance)
                     db.session.add(m)
                     db.session.commit()
-                    productsDeltaChecked.append(
-                        productDelta.findtext('reg_number'))
+                    products_delta_checked.append(
+                        product_delta.findtext('reg_number'))
 
     @staticmethod
-    def write_information(fileName):
-        newFileName = date.today().strftime('%Y%m%d')+'_'+fileName
-        shutil.copyfile(fileName, newFileName)
+    def write_information(file_name):
+        '''Function to write information to .csv file'''
+        new_file_name = date.today().strftime('%Y%m%d')+'_'+file_name
+        shutil.copyfile(file_name, new_file_name)
         with open(date.today().strftime('%Y%m%d')+'.csv', 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f, dialect='excel', delimiter=',')
             medications = AddedMedication.query.all()
@@ -245,16 +268,17 @@ class AddedMedication(db.Model):
                                  medication.notesEN,
                                  medication.sportsINCompetitionEN,
                                  medication.sportsOUTCompetitionEN])
-        with open(newFileName, 'a', encoding='utf-8', newline='') as f:
-            inputLines = fileinput.input(
+        with open(new_file_name, 'a', encoding='utf-8', newline='') as f:
+            input_lines = fileinput.input(
                 date.today().strftime('%Y%m%d')+'.csv')
-            f.writelines(inputLines)
-        df = pd.read_csv(newFileName)
+            f.writelines(input_lines)
+        df = pd.read_csv(new_file_name)
         df = df.drop_duplicates(subset=['authorisation_no'], keep='last')
-        df.to_csv(newFileName, index=False)
+        df.to_csv(new_file_name, index=False)
 
 
 class SearchedMedication(db.Model):
+    '''Model for medication that has been added by search'''
     __tablename__ = 'searched_medication'
     id = db.Column(db.Integer, primary_key=True)
     atcCode = db.Column(db.String(10))
@@ -277,26 +301,33 @@ class SearchedMedication(db.Model):
 
     @staticmethod
     def insert_medication(file, search_term):
+        '''Function to create new products in database'''
         SearchedMedication.query.delete()  # Start with an empty table to avoid duplicates
         db.session.commit()
         with open(file, encoding='utf-8') as f:
-            allStuff = ET.parse(f)
-        products = allStuff.findall('products/product')
+            all_stuff = ET.parse(f)
+        products = all_stuff.findall('products/product')
         for product in products:
-            if SearchedMedication.query.filter_by(regNumber=product.findtext('authorisation_no')).first():
+            if SearchedMedication.query.filter_by(
+                    regNumber=product.findtext('authorisation_no')).first():
                 continue
-            if (search_term in product.findtext('atc_code')) or (search_term in product.findtext('active_substance').lower()) or (search_term in product.findtext('authorisation_no')):
+            if (search_term in product.findtext('atc_code')) \
+                    or (search_term in product.findtext('active_substance').lower()) \
+                    or (search_term in product.findtext('authorisation_no')):
                 name = product.findtext('medicine_name')
-                regNumber = product.findtext('authorisation_no')
-                atcCode = product.findtext('atc_code')
+                reg_number = product.findtext('authorisation_no')
+                atc_code = product.findtext('atc_code')
                 form = product.findtext('pharmaceutical_form_lv')
-                activeSubstance = product.findtext('active_substance')
-                m = SearchedMedication(name=name, regNumber=regNumber, atcCode=atcCode,
-                                       form=form, activeSubstance=activeSubstance)
+                active_substance = product.findtext('active_substance')
+                m = SearchedMedication(name=name,
+                                       regNumber=reg_number,
+                                       atcCode=atc_code,
+                                       form=form,
+                                       activeSubstance=active_substance)
                 db.session.add(m)
                 db.session.commit()
-        searchedMed = SearchedMedication.query.all()
-        for med in searchedMed:
+        searched_med = SearchedMedication.query.all()
+        for med in searched_med:
             with open('antidopinga_vielas.csv', encoding='utf-8') as df:
                 df_csv = csv.reader(df)
                 for line in df_csv:
@@ -316,9 +347,10 @@ class SearchedMedication(db.Model):
                         db.session.commit()
 
     @staticmethod
-    def write_information(fileName):
-        newFileName = date.today().strftime('%Y%m%d')+'_'+fileName
-        shutil.copyfile(fileName, newFileName)
+    def write_information(file_name):
+        '''Function to write information to .csv file'''
+        new_file_name = date.today().strftime('%Y%m%d')+'_'+file_name
+        shutil.copyfile(file_name, new_file_name)
         with open(date.today().strftime('%Y%m%d')+'.csv', 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f, dialect='excel', delimiter=',')
             medications = SearchedMedication.query.all()
@@ -338,16 +370,17 @@ class SearchedMedication(db.Model):
                                  medication.notesEN,
                                  medication.sportsINCompetitionEN,
                                  medication.sportsOUTCompetitionEN])
-        with open(newFileName, 'a', encoding='utf-8', newline='') as f:
-            inputLines = fileinput.input(
+        with open(new_file_name, 'a', encoding='utf-8', newline='') as f:
+            input_lines = fileinput.input(
                 date.today().strftime('%Y%m%d')+'.csv')
-            f.writelines(inputLines)
-        df = pd.read_csv(newFileName)
+            f.writelines(input_lines)
+        df = pd.read_csv(new_file_name)
         df = df.drop_duplicates(subset=['authorisation_no'], keep='last')
-        df.to_csv(newFileName, index=False)
+        df.to_csv(new_file_name, index=False)
 
 
 class NotesFields(db.Model):
+    '''Model for database with notes about information on medications' use in sports'''
     __tablename__ = 'notes_fields'
     id = db.Column(db.Integer, primary_key=True)
     atcCode = db.Column(db.String(10), unique=True)
@@ -362,40 +395,40 @@ class NotesFields(db.Model):
     sportsOUTCompetitionEN = db.Column(db.Text)
 
     @staticmethod
-    def update_notes(drugRegister, dopingRegister):
-        with open(drugRegister, encoding='utf-8') as dr:
-            allStuff = ET.parse(dr)
-        products = allStuff.findall('products/product')
-
-        with open(dopingRegister, encoding='utf-8', newline='') as dr:
+    def update_notes(drug_register, doping_register):
+        '''Function to update the databes'''
+        with open(drug_register, encoding='utf-8') as dr:
+            all_stuff = ET.parse(dr)
+        products = all_stuff.findall('products/product')
+        with open(doping_register, encoding='utf-8', newline='') as dr:
             reader = csv.reader(dr, dialect='excel', delimiter=',')
             rows = list(reader)
             for product in products:
-                authorisationNo = product.findtext('authorisation_no')
-                atcCode = product.findtext('atc_code')
-                if NotesFields.query.filter_by(atcCode=atcCode).first():
+                authorisation_no = product.findtext('authorisation_no')
+                atc_code = product.findtext('atc_code')
+                if NotesFields.query.filter_by(atcCode=atc_code).first():
                     continue
                 for row in rows:
-                    if authorisationNo in row:
-                        prohibitedOUTCompetition = row[4]
-                        prohibitedINCompetition = row[5]
-                        prohibitedClass = row[6]
-                        notesLV = row[7]
-                        sportsINCompetitionLV = row[8]
-                        sportsOUTCompetitionLV = row[9]
-                        notesEN = row[10]
-                        sportsINCompetitionEN = row[11]
-                        sportsOUTCompetitionEN = row[12]
-                        m = NotesFields(atcCode=atcCode,
-                                        prohibitedOUTCompetition=prohibitedOUTCompetition,
-                                        prohibitedINCompetition=prohibitedINCompetition,
-                                        prohibitedClass=prohibitedClass,
-                                        notesLV=notesLV,
-                                        sportsINCompetitionLV=sportsINCompetitionLV,
-                                        sportsOUTCompetitionLV=sportsOUTCompetitionLV,
-                                        notesEN=notesEN,
-                                        sportsINCompetitionEN=sportsINCompetitionEN,
-                                        sportsOUTCompetitionEN=sportsOUTCompetitionEN)
+                    if authorisation_no in row:
+                        prohibited_out = row[4]
+                        prohibited_in = row[5]
+                        prohibited_class = row[6]
+                        notes_lv = row[7]
+                        sports_in = row[8]
+                        sports_out = row[9]
+                        notes_en = row[10]
+                        sports_in_en = row[11]
+                        sports_out_en = row[12]
+                        m = NotesFields(atcCode=atc_code,
+                                        prohibitedOUTCompetition=prohibited_out,
+                                        prohibitedINCompetition=prohibited_in,
+                                        prohibitedClass=prohibited_class,
+                                        notesLV=notes_lv,
+                                        sportsINCompetitionLV=sports_in,
+                                        sportsOUTCompetitionLV=sports_out,
+                                        notesEN=notes_en,
+                                        sportsINCompetitionEN=sports_in_en,
+                                        sportsOUTCompetitionEN=sports_out_en)
                         db.session.add(m)
                         db.session.commit()
                         rows.remove(row)

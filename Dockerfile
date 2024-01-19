@@ -12,10 +12,10 @@ RUN venv/bin/pip install gunicorn
 
 COPY app app
 COPY migrations migrations
-COPY ZRApp.py config.py boot.sh ./
+COPY zrapp.py config.py boot.sh ./
 RUN chmod +x boot.sh
 
-ENV FLASK_APP ZRApp.py
+ENV FLASK_APP zrapp.py
 ENV FLASK_CONFIG docker
 
 RUN chown -R zrapp:zrapp ./

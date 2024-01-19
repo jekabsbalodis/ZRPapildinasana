@@ -22,7 +22,7 @@
             {{ render_form_row([form.sportsOUTCompetitionLV]) }}
             {{ render_form_row([form.sportsOUTCompetitionEN]) }}
             {{ render_form_row([form.include], button_map={'include': 'primary'}, row_class='p-2 row') }}
-            {% if bulkEdit %}
+            {% if bulk_edit %}
             {{ render_form_row([form.bulkInclude], button_map={'bulkInclude': 'danger'}, row_class='p-2 row') }}
             {% endif %}
             {{ render_form_row([form.notInclude], button_map={'notInclude': 'warning'}, row_class='p-2 row') }}

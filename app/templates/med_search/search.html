@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+
+{% block title %}<title>ZRApp - Meklēt medikamentus pievienošanai</title>{% endblock %}
+
+{% block page_content %}
+<div class="whole-page">
+    <h1 class="display-1">Meklēt medikamentus pievienošanai</h1>
+    <hr>
+    <div class="row row-cols-1 row-cols-lg-3 g-4">
+        <div class="col">{{ render_form(form_atc, render_kw={'onsubmit': 'return loading()'}) }}</div>
+        <div class="col">{{ render_form(form_name, render_kw={'onsubmit': 'return loading()'}) }}</div>
+        <div class="col">{{ render_form(form_reg, render_kw={'onsubmit': 'return loading()'}) }}</div>
+    </div>
+</div>
+<div class="spinner-wrapper">
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
