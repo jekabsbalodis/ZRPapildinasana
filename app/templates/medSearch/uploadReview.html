@@ -37,72 +37,96 @@
     </div>
 </div>
 
-<div class="container">
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        {%- for row in csv %}
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-title">
-                        medicine_name:
-                        <strong>{{ row[0] }}</strong>
-                    </p>
-                    <p class="card-text">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            authorisation_no:<br>
-                            <strong>{{ row[1] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            pharmaceutical_form_lv:<br>
-                            <strong>{{ row[2] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            active_substance:<br>
-                            <strong>{{ row[3] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Aizliegts ārpus sacensībām:<br>
-                            <strong>{{ row[4] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Aizliegts sacensību laikā:<br>
-                            <strong>{{ row[5] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Aizliegto vielu un metožu saraksta klase:<br>
-                            <strong>{{ row[6] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Piezīmes par lietošanu:<br>
-                            <strong>{{ row[7] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Sporta veidi, kuros aizliegts sacensību laikā:<br>
-                            <strong>{{ row[8] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Sporta veidi, kuros aizliegts ārpus sacensībām:<br>
-                            <strong>{{ row[9] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Notes:<br>
-                            <strong>{{ row[10] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Prohibited In-Competition in the following sports:<br>
-                            <strong>{{ row[11] }}</strong>
-                        </li>
-                        <li class="list-group-item">
-                            Prohibited Out-of-Competition in the following sports:<br>
-                            <strong>{{ row[12] }}</strong>
-                        </li>
-                    </ul>
-                    </p>
-                </div>
-            </div>
-        </div>
-        {%- endfor %}
-    </div>
+<div class="table-responsive">
+    <table class="table table-sm table-striped table-hover">
+        <thead class="table-light">
+            <tr>
+                <td>
+                    Nosaukums
+                </td>
+                <td>
+                    Reģ. Nr.
+                </td>
+                <td>
+                    Forma
+                </td>
+                <td>
+                    Aktīvā viela
+                </td>
+                <td>
+                    Aizliegts ārpus sacensībām
+                </td>
+                <td>
+                    Aizliegts sacensību laikā
+                </td>
+                <td>
+                    Aizliegto vielu un metožu saraksta klase
+                </td>
+                <td>
+                    Piezīmes par lietošanu
+                </td>
+                <td>
+                    Sporta veidi, kuros aizliegts sacensību laikā
+                </td>
+                <td>
+                    Sporta veidi, kuros aizliegts ārpus sacensībām
+                </td>
+                <td>
+                    Notes
+                </td>
+                <td>
+                    Prohibited In-Competition in the following sports
+                </td>
+                <td>
+                    Prohibited Out-of-Competition in the following sports
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in csv %}
+            <tr>
+                <td>
+                    {{ row[0] }}
+                </td>
+                <td>
+                    {{ row[1] }}
+                </td>
+                <td>
+                    {{ row[2] }}
+                </td>
+                <td>
+                    {{ row[3] }}
+                </td>
+                <td>
+                    {{ row[4] }}
+                </td>
+                <td>
+                    {{ row[5] }}
+                </td>
+                <td>
+                    {{ row[6] }}
+                </td>
+                <td>
+                    {{ row[7] }}
+                </td>
+                <td>
+                    {{ row[8] }}
+                </td>
+                <td>
+                    {{ row[9] }}
+                </td>
+                <td>
+                    {{ row[10] }}
+                </td>
+                <td>
+                    {{ row[11] }}
+                </td>
+                <td>
+                    {{ row[12] }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
