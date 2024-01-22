@@ -37,7 +37,7 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             next_page = request.args.get('next')
-            if next_page is None or not next.startswith('/'):
+            if next_page is None or not next_page.startswith('/'):
                 next_page = url_for('main.index')
             return redirect(next_page)
         flash('Nepareizs lietotāja vārds vai parole')
