@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="lv" data-bs-theme='light'>
+<html lang="lv" data-bs-theme='auto'>
 
 <head>
     {% block head %}
@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-
+    <script src="https://getbootstrap.com/docs/5.3/assets/js/color-modes.js"></script>
     {% block styles %}
     <!-- Bootstrap CSS -->
     {{ bootstrap.load_css() }}
