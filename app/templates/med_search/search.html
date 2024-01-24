@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% from 'bootstrap5/form.html' import render_form %}
 
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='spinner.css') }}">
+{% endblock %}
 
 {% block title %}<title>ZRApp - Meklēt medikamentus pievienošanai</title>{% endblock %}
 
@@ -21,4 +25,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='spinner.js') }}"></script>
 {% endblock %}
