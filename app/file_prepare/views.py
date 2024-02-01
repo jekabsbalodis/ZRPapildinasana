@@ -2,7 +2,7 @@
 import csv
 from datetime import date, timedelta
 from flask_login import login_required
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, current_app
 from .forms import DownloadForm, ReviewMedicationForm, UploadDataGovLVForm, UploadZVAForm
 from . import file_prepare
 from .. import db
@@ -122,17 +122,17 @@ def upload_finished():
     zva_form = UploadZVAForm()
     data_gov_lv_form = UploadDataGovLVForm()
     if zva_form.submitZVA.data and zva_form.validate():
-        upload_zva(user_name=zva_form.userName.data,
-                   password=zva_form.passWord.data,
-                   ftp_address=zva_form.ftpAddress.data,
-                   ftp_port=zva_form.ftpPort.data,
+        upload_zva(user_name=current_app.config['ZVA_USER_NAME'],
+                   password=current_app.config['ZVA_PASSWORD'],
+                   ftp_address=current_app.config['ZVA_FTP_ADDRESS'],
+                   ftp_port=int(current_app.config['ZVA_FTP_PORT']),
                    file_name=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
         flash('Dati ZVA serverī augšuplādēti')
     if data_gov_lv_form.submitDataGovLV.data and data_gov_lv_form.validate():
-        upload_data_gov_lv(resource_id=data_gov_lv_form.resourceID.data,
-                           api_key=data_gov_lv_form.apiKey.data,
+        upload_data_gov_lv(resource_id=current_app.config['DATA_GOV_LV_RESOURCE_ID'],
+                           api_key=current_app.config['DATA_GOV_LV_API_KEY'],
                            file_name=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
         flash('Dati data.gov.lv serverī augšuplādēti')
-    return render_template('file_prepare/upload_finished.html',
+    return render_template('med_search/upload_finished.html',
                            zva_form=zva_form,
                            data_gov_lv_form=data_gov_lv_form)

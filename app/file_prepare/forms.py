@@ -48,15 +48,15 @@ class ReviewMedicationForm(FlaskForm):
 
 class UploadZVAForm(FlaskForm):
     '''Form to provide credentials to upload prepared file'''
-    userName = StringField('Lietotāja vārds', validators=[DataRequired()])
-    passWord = PasswordField('Parole', validators=[DataRequired()])
-    ftpAddress = StringField('Servera adrese', validators=[DataRequired()])
-    ftpPort = IntegerField('Servera ports', validators=[DataRequired()])
-    submitZVA = SubmitField('Apstiprināt')
+    # userName = StringField('Lietotāja vārds', validators=[DataRequired()])
+    # passWord = PasswordField('Parole', validators=[DataRequired()])
+    # ftpAddress = StringField('Servera adrese', validators=[DataRequired()])
+    # ftpPort = IntegerField('Servera ports', validators=[DataRequired()])
+    submitZVA = SubmitField('Augšuplādēt')
 
 
 class UploadDataGovLVForm(FlaskForm):
     '''Form to provide credentials to upload prepared file'''
-    resourceID = StringField('Resursa ID numurs', validators=[DataRequired()])
-    apiKey = PasswordField('api atslēga', validators=[DataRequired()])
-    submitDataGovLV = SubmitField('Apstiprināt')
+    # resourceID = StringField('Resursa ID numurs', validators=[DataRequired()])
+    # apiKey = PasswordField('api atslēga', validators=[DataRequired()])
+    submitDataGovLV = SubmitField('Augšuplādēt')
