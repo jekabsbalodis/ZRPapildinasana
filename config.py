@@ -17,6 +17,12 @@ class Config:
     ZRAPP_ADMIN = os.environ.get('ZRAPP_ADMIN')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SSL_REDIRECT = False
+    DATA_GOV_LV_RESOURCE_ID = os.environ.get('DATA_GOV_LV_RESOURCE_ID')
+    DATA_GOV_LV_API_KEY = os.environ.get('DATA_GOV_LV_API_KEY')
+    ZVA_USER_NAME = os.environ.get('ZVA_USER_NAME')
+    ZVA_PASSWORD = os.environ.get('ZVA_PASSWORD')
+    ZVA_FTP_ADDRESS = os.environ.get('ZVA_FTP_ADDRESS')
+    ZVA_FTP_PORT = os.environ.get('ZVA_FTP_PORT')
     # BOOTSTRAP_BOOTSWATCH_THEME = 'cosmo'
 
     @staticmethod
