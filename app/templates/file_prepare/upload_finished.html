@@ -8,12 +8,28 @@
 <hr>
 <div class="row row-cols-1 row-cols-lg-4 g-4">
     <div class="col">
-        <p class="h4 pb-2">Augšuplāde ZVA</p>
-        {{ render_form(zva_form, extra_classes='col-lg-6') }}
+        <div class="card h-100 text-bg-success">
+            <div class="card-body">
+                <div class="card-text d-flex justify-content-center">
+                    Augšuplāde ZVA
+                </div>
+            </div>
+            <div class="card-footer">
+                {{ render_form(zva_form, extra_classes='d-flex justify-content-center') }}
+            </div>
+        </div>
     </div>
     <div class="col">
-        <p class="h4 pb-2">Augšuplāde data.gov.lv</p>
-        {{ render_form(data_gov_lv_form, extra_classes='col-lg-6') }}
+        <div class="card h-100 text-bg-success">
+            <div class="card-body">
+                <div class="card-text d-flex justify-content-center">
+                    Augšuplāde data.gov.lv
+                </div>
+            </div>
+            <div class="card-footer">
+                {{ render_form(data_gov_lv_form, extra_classes='d-flex justify-content-center') }}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
