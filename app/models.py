@@ -216,33 +216,29 @@ class AddedMedication(db.Model):
         '''Function to create new products in database'''
         AddedMedication.query.delete()  # Start with an empty table to avoid duplicates
         db.session.commit()
-        with open(delta_file, encoding='utf-8') as df:
-            all_stuff_delta = ET.parse(df)
-        products_delta = all_stuff_delta.findall('meds/med')
-        with open(file, encoding='utf-8') as f:
-            all_stuff = ET.parse(f)
-        products = all_stuff.findall('products/product')
-        products_delta_checked = []
-        for product_delta in products_delta:
-            for product in products:
-                if product_delta.findtext('reg_number') in products_delta_checked:
-                    continue
-                if product_delta.findtext('reg_number') == product.findtext('authorisation_no'):
-                    name = product_delta.findtext('med_name')
-                    reg_number = product_delta.findtext('reg_number')
-                    atc_code = product.findtext('atc_code')
-                    form = product.findtext('pharmaceutical_form_lv')
-                    active_substance = product.findtext('active_substance')
-                    m = AddedMedication(
-                        name=name,
-                        regNumber=reg_number,
-                        atcCode=atc_code,
-                        form=form,
-                        activeSubstance=active_substance)
-                    db.session.add(m)
-                    db.session.commit()
-                    products_delta_checked.append(
-                        product_delta.findtext('reg_number'))
+
+        # Open file with newly added medication
+        df_delta = pd.read_xml(delta_file, encoding='utf-8', xpath='meds/med')
+
+        # Open file with drug register
+        df_products = pd.read_json(file, encoding='utf-8-sig')
+        
+        # Loop through newly added medication and write necessary information in database
+        for product_delta in df_delta.itertuples():
+            if product_delta[1] == (df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['authorisation_no']):
+                name = product_delta[2]
+                reg_number = product_delta[1]
+                atc_code = df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['atc_code']
+                form = df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['pharmaceutical_form_lv']
+                active_substance = df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['active_substance']
+                m = AddedMedication(
+                    name=name,
+                    regNumber=reg_number,
+                    atcCode=atc_code,
+                    form=form,
+                    activeSubstance=active_substance)
+                db.session.add(m)
+                db.session.commit()
 
     @staticmethod
     def write_information(file_name):
@@ -300,51 +296,81 @@ class SearchedMedication(db.Model):
     sportsOUTCompetitionEN = db.Column(db.Text)
 
     @staticmethod
-    def insert_medication(file, search_term):
+    def insert_medication(file, doping_file, search_term):
         '''Function to create new products in database'''
         SearchedMedication.query.delete()  # Start with an empty table to avoid duplicates
         db.session.commit()
-        with open(file, encoding='utf-8') as f:
-            all_stuff = ET.parse(f)
-        products = all_stuff.findall('products/product')
-        for product in products:
-            if SearchedMedication.query.filter_by(
-                    regNumber=product.findtext('authorisation_no')).first():
-                continue
-            if (search_term in product.findtext('atc_code')) \
-                    or (search_term in product.findtext('active_substance').lower()) \
-                    or (search_term in product.findtext('authorisation_no')):
-                name = product.findtext('medicine_name')
-                reg_number = product.findtext('authorisation_no')
-                atc_code = product.findtext('atc_code')
-                form = product.findtext('pharmaceutical_form_lv')
-                active_substance = product.findtext('active_substance')
-                m = SearchedMedication(name=name,
-                                       regNumber=reg_number,
-                                       atcCode=atc_code,
-                                       form=form,
-                                       activeSubstance=active_substance)
-                db.session.add(m)
-                db.session.commit()
-        searched_med = SearchedMedication.query.all()
-        for med in searched_med:
-            with open('antidopinga_vielas.csv', encoding='utf-8') as df:
-                df_csv = csv.reader(df)
-                for line in df_csv:
-                    if med.regNumber in line:
-                        med.include = False
-                        med.userChecked = True
-                        med.doping = True
-                        med.prohibitedOUTCompetition = line[4]
-                        med.prohibitedINCompetition = line[5]
-                        med.prohibitedClass = line[6]
-                        med.notesLV = line[7]
-                        med.sportsINCompetitionLV = line[8]
-                        med.sportsOUTCompetitionLV = line[9]
-                        med.notesEN = line[10]
-                        med.sportsINCompetitionEN = line[11]
-                        med.sportsOUTCompetitionEN = line[12]
-                        db.session.commit()
+
+        # Open file with drug register
+        df_products = pd.read_json(file, encoding='utf-8-sig')
+
+        # Search the drug register for entries matchin the search term
+        df_searched = df_products[ \
+            (df_products['atc_code'].str.contains(search_term)) | \
+            (df_products['active_substance'].str.contains(search_term, case=False)) | \
+            (df_products['authorisation_no'].str.contains(search_term)) \
+        ].drop_duplicates(subset=['authorisation_no'])
+
+        # Open file with information on use in sports
+        df_doping = pd.read_csv(doping_file)
+
+        # Write information for the searched medication
+        for search_result in df_searched.itertuples():
+            name = search_result[3] # product.findtext('medicine_name')
+            reg_number = search_result[5] # product.findtext('authorisation_no')
+            atc_code = search_result[33] # product.findtext('atc_code')
+            form = search_result[15] # product.findtext('pharmaceutical_form_lv')
+            active_substance = search_result[17] # product.findtext('active_substance')
+
+            # If searched medication already has information about use in sports, include it
+            if search_result[5] == (df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['authorisation_no']):
+                include = False
+                user_checked = True
+                doping = True
+                prohibited_out = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Aizliegts ārpus sacensībām']
+                prohibited_in = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Aizliegts sacensību laikā']
+                prohibited_class = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Aizliegto vielu un metožu saraksta klase']
+                notes = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Piezīmes par lietošanu']
+                sports_in_competition_lv = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Sporta veidi, kuros aizliegts sacensību laikā']
+                sports_out_competition_lv = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Sporta veidi, kuros aizliegts ārpus sacensībām']
+                notes_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Notes']
+                sports_in_competition_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Prohibited In-Competition in the following sports']
+                sports_out_competition_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Prohibited Out-of-Competition in the following sports']
+            
+            # Else write nothing in the table
+            else:
+                include = None
+                user_checked = None
+                doping = None
+                prohibited_out = None
+                prohibited_in = None
+                prohibited_class = None
+                notes = None
+                sports_in_competition_lv = None
+                sports_out_competition_lv = None
+                notes_en = None
+                sports_in_competition_en = None
+                sports_out_competition_en = None
+
+            m = SearchedMedication(name=name,
+                                   regNumber=reg_number,
+                                   atcCode=atc_code,
+                                   form=form,
+                                   activeSubstance=active_substance,
+                                   include=include,
+                                   userChecked=user_checked,
+                                   doping=doping,
+                                   prohibitedOUTCompetition=prohibited_out,
+                                   prohibitedINCompetition=prohibited_in,
+                                   prohibitedClass=prohibited_class,
+                                   notesLV=notes,
+                                   sportsINCompetitionLV=sports_in_competition_lv,
+                                   sportsOUTCompetitionLV=sports_out_competition_lv,
+                                   notesEN=notes_en,
+                                   sportsINCompetitionEN=sports_in_competition_en,
+                                   sportsOUTCompetitionEN=sports_out_competition_en,)
+            db.session.add(m)
+            db.session.commit()
 
     @staticmethod
     def write_information(file_name):

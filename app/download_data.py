@@ -3,12 +3,9 @@ import requests
 
 
 def download_register():
-    '''Download register of human medicines'''
-    url = 'https://dati.zva.gov.lv/zalu-registrs/export/HumanProducts.xml'
-    with requests.get(url) as r:
-        with open('HumanProducts.xml', 'wb') as human_products:
-            human_products.write(r.content)
-    return 'HumanProducts.xml'
+    '''Return url for register of human medicines'''
+    url = 'https://dati.zva.gov.lv/zalu-registrs/export/HumanProducts.json'
+    return url
 
 
 def download_register_delta(date_from, date_to):
@@ -30,3 +27,4 @@ def download_doping_substances():
     with requests.get(data.get('result').get('resources')[0].get('url')) as r:
         with open(file_name, 'wb') as f:
             f.write(r.content)
+    return 'antidopinga_vielas.csv'
