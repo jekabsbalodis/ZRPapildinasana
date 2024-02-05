@@ -19,7 +19,5 @@ def upload_zva(user_name, password, ftp_address, ftp_port, file_name):
             ftps.connect(ftp_address, ftp_port)
             ftps.login(user_name, password)
             ftps.prot_p()
-            ftps.dir()
             ftps.storbinary('STOR antidopinga_vielas.csv', file)
-            ftps.dir()
             ftps.quit()
