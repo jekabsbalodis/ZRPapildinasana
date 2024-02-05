@@ -9,14 +9,11 @@ def download_register():
 
 
 def download_register_delta(date_from, date_to):
-    '''Download file containing changes in register of human medicines
+    '''return url for file containing changes in register of human medicines
     date_to and date_from provides date selection'''
     url = 'https://dati.zva.gov.lv/zr-log/api/export/?s-ins=1&d-from=' + \
         str(date_from) + '&d-to=' + str(date_to)
-    with requests.get(url) as r:
-        with open('delta.xml', 'wb') as delta:
-            delta.write(r.content)
-    return 'delta.xml'
+    return url
 
 
 def download_doping_substances():
