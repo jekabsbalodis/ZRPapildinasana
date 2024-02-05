@@ -218,7 +218,10 @@ class AddedMedication(db.Model):
         db.session.commit()
 
         # Open file with newly added medication
-        df_delta = pd.read_xml(delta_file, encoding='utf-8', xpath='meds/med')
+        try:
+            df_delta = pd.read_xml(delta_file, encoding='utf-8', xpath='meds/med')
+        except ValueError:
+            return None
 
         # Open file with drug register
         df_products = pd.read_json(file, encoding='utf-8-sig')
