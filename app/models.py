@@ -323,7 +323,7 @@ class SearchedMedication(db.Model):
             active_substance = search_result[17] # product.findtext('active_substance')
 
             # If searched medication already has information about use in sports, include it
-            if search_result[5] == (df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['authorisation_no']):
+            if not df_doping.loc[df_doping['authorisation_no'] == search_result[5]].empty:
                 include = False
                 user_checked = True
                 doping = True
