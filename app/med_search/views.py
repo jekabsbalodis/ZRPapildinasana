@@ -19,22 +19,24 @@ def search():
     form_atc = AtcSearchForm()
     form_name = NameSearchForm()
     form_reg = RegSearchForm()
-    download_doping_substances()
     if form_atc.searchAtcCode.data and form_atc.validate():
         SearchedMedication.insert_medication(
             download_register(),
+            download_doping_substances(),
             search_term=form_atc.atcCode.data.upper())
         flash('Meklēšana pēc ATĶ koda veikta')
         return redirect(url_for('med_search.review_medication'))
     if form_name.searchName.data and form_name.validate():
         SearchedMedication.insert_medication(
             download_register(),
+            download_doping_substances(),
             search_term=form_name.name.data.lower())
         flash('Meklēšana pēc aktīvas vielas nosaukuma veikta')
         return redirect(url_for('med_search.review_medication'))
     if form_reg.searchRegNumber.data and form_reg.validate():
         SearchedMedication.insert_medication(
             download_register(),
+            download_doping_substances(),
             search_term=form_reg.regNumber.data.upper())
         flash('Meklēšana pēc reģistrācijas numura veikta')
         return redirect(url_for('med_search.review_medication'))
