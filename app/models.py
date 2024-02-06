@@ -340,40 +340,36 @@ class SearchedMedication(db.Model):
                 sports_in_competition_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Prohibited In-Competition in the following sports']
                 sports_out_competition_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Prohibited Out-of-Competition in the following sports']
             
+                m = SearchedMedication(name=name,
+                        regNumber=reg_number,
+                        atcCode=atc_code,
+                        form=form,
+                        activeSubstance=active_substance,
+                        include=include,
+                        userChecked=user_checked,
+                        doping=doping,
+                        prohibitedOUTCompetition=prohibited_out,
+                        prohibitedINCompetition=prohibited_in,
+                        prohibitedClass=prohibited_class,
+                        notesLV=notes,
+                        sportsINCompetitionLV=sports_in_competition_lv,
+                        sportsOUTCompetitionLV=sports_out_competition_lv,
+                        notesEN=notes_en,
+                        sportsINCompetitionEN=sports_in_competition_en,
+                        sportsOUTCompetitionEN=sports_out_competition_en,)
+                db.session.add(m)
+                db.session.commit()
+
+
             # Else write nothing in the table
             else:
-                include = None
-                user_checked = None
-                doping = None
-                prohibited_out = None
-                prohibited_in = None
-                prohibited_class = None
-                notes = None
-                sports_in_competition_lv = None
-                sports_out_competition_lv = None
-                notes_en = None
-                sports_in_competition_en = None
-                sports_out_competition_en = None
-
-            m = SearchedMedication(name=name,
+                m = SearchedMedication(name=name,
                                    regNumber=reg_number,
                                    atcCode=atc_code,
                                    form=form,
-                                   activeSubstance=active_substance,
-                                   include=include,
-                                   userChecked=user_checked,
-                                   doping=doping,
-                                   prohibitedOUTCompetition=prohibited_out,
-                                   prohibitedINCompetition=prohibited_in,
-                                   prohibitedClass=prohibited_class,
-                                   notesLV=notes,
-                                   sportsINCompetitionLV=sports_in_competition_lv,
-                                   sportsOUTCompetitionLV=sports_out_competition_lv,
-                                   notesEN=notes_en,
-                                   sportsINCompetitionEN=sports_in_competition_en,
-                                   sportsOUTCompetitionEN=sports_out_competition_en,)
-            db.session.add(m)
-            db.session.commit()
+                                   activeSubstance=active_substance)
+                db.session.add(m)
+                db.session.commit()
 
     @staticmethod
     def write_information(file_name):
