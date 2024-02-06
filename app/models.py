@@ -228,12 +228,16 @@ class AddedMedication(db.Model):
         
         # Loop through newly added medication and write necessary information in database
         for product_delta in df_delta.itertuples():
-            if product_delta[1] == (df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['authorisation_no']):
+            if product_delta[1] == (df_products.loc[df_products['authorisation_no'] ==
+                                                    product_delta[1]].iloc[0]['authorisation_no']):
                 name = product_delta[2]
                 reg_number = product_delta[1]
-                atc_code = df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['atc_code']
-                form = df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['pharmaceutical_form_lv']
-                active_substance = df_products.loc[df_products['authorisation_no'] == product_delta[1]].iloc[0]['active_substance']
+                atc_code = df_products.loc[df_products['authorisation_no'] ==
+                                           product_delta[1]].iloc[0]['atc_code']
+                form = df_products.loc[df_products['authorisation_no'] ==
+                                       product_delta[1]].iloc[0]['pharmaceutical_form_lv']
+                active_substance = df_products.loc[df_products['authorisation_no'] ==
+                                                   product_delta[1]].iloc[0]['active_substance']
                 m = AddedMedication(
                     name=name,
                     regNumber=reg_number,
@@ -330,50 +334,54 @@ class SearchedMedication(db.Model):
                 include = False
                 user_checked = True
                 doping = True
-                prohibited_out = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Aizliegts ārpus sacensībām']
-                prohibited_in = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Aizliegts sacensību laikā']
-                prohibited_class = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Aizliegto vielu un metožu saraksta klase']
-                notes = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Piezīmes par lietošanu']
-                sports_in_competition_lv = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Sporta veidi, kuros aizliegts sacensību laikā']
-                sports_out_competition_lv = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Sporta veidi, kuros aizliegts ārpus sacensībām']
-                notes_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Notes']
-                sports_in_competition_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Prohibited In-Competition in the following sports']
-                sports_out_competition_en = df_doping.loc[df_doping['authorisation_no'] == search_result[5]].iloc[0]['Prohibited Out-of-Competition in the following sports']
-            
+                prohibited_out = df_doping.loc[df_doping['authorisation_no']
+                                               == search_result[5]].iloc[0]['Aizliegts ārpus sacensībām']
+                prohibited_in = df_doping.loc[df_doping['authorisation_no']
+                                              == search_result[5]].iloc[0]['Aizliegts sacensību laikā']
+                prohibited_class = df_doping.loc[df_doping['authorisation_no'] ==
+                                                 search_result[5]].iloc[0]['Aizliegto vielu un metožu saraksta klase']
+                notes = df_doping.loc[df_doping['authorisation_no'] ==
+                                      search_result[5]].iloc[0]['Piezīmes par lietošanu']
+                sports_in_competition_lv = df_doping.loc[df_doping['authorisation_no'] ==
+                                                         search_result[5]].iloc[0]['Sporta veidi, kuros aizliegts sacensību laikā']
+                sports_out_competition_lv = df_doping.loc[df_doping['authorisation_no'] ==
+                                                          search_result[5]].iloc[0]['Sporta veidi, kuros aizliegts ārpus sacensībām']
+                notes_en = df_doping.loc[df_doping['authorisation_no']
+                                         == search_result[5]].iloc[0]['Notes']
+                sports_in_competition_en = df_doping.loc[df_doping['authorisation_no'] ==
+                                                         search_result[5]].iloc[0]['Prohibited In-Competition in the following sports']
+                sports_out_competition_en = df_doping.loc[df_doping['authorisation_no'] ==
+                                                          search_result[5]].iloc[0]['Prohibited Out-of-Competition in the following sports']
+
+                m = SearchedMedication(name=name,
+                                    regNumber=reg_number,
+                                    atcCode=atc_code,
+                                    form=form,
+                                    activeSubstance=active_substance,
+                                    include=include,
+                                    userChecked=user_checked,
+                                    doping=doping,
+                                    prohibitedOUTCompetition=prohibited_out,
+                                    prohibitedINCompetition=prohibited_in,
+                                    prohibitedClass=prohibited_class,
+                                    notesLV=notes,
+                                    sportsINCompetitionLV=sports_in_competition_lv,
+                                    sportsOUTCompetitionLV=sports_out_competition_lv,
+                                    notesEN=notes_en,
+                                    sportsINCompetitionEN=sports_in_competition_en,
+                                    sportsOUTCompetitionEN=sports_out_competition_en,)
+                db.session.add(m)
+                db.session.commit()
+
             # Else write nothing in the table
             else:
-                include = None
-                user_checked = None
-                doping = None
-                prohibited_out = None
-                prohibited_in = None
-                prohibited_class = None
-                notes = None
-                sports_in_competition_lv = None
-                sports_out_competition_lv = None
-                notes_en = None
-                sports_in_competition_en = None
-                sports_out_competition_en = None
-
-            m = SearchedMedication(name=name,
+                m = SearchedMedication(name=name,
                                    regNumber=reg_number,
                                    atcCode=atc_code,
                                    form=form,
-                                   activeSubstance=active_substance,
-                                   include=include,
-                                   userChecked=user_checked,
-                                   doping=doping,
-                                   prohibitedOUTCompetition=prohibited_out,
-                                   prohibitedINCompetition=prohibited_in,
-                                   prohibitedClass=prohibited_class,
-                                   notesLV=notes,
-                                   sportsINCompetitionLV=sports_in_competition_lv,
-                                   sportsOUTCompetitionLV=sports_out_competition_lv,
-                                   notesEN=notes_en,
-                                   sportsINCompetitionEN=sports_in_competition_en,
-                                   sportsOUTCompetitionEN=sports_out_competition_en,)
-            db.session.add(m)
-            db.session.commit()
+                                   activeSubstance=active_substance)
+                db.session.add(m)
+                db.session.commit()
 
     @staticmethod
     def write_information(file_name):
