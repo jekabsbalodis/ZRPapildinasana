@@ -1,5 +1,6 @@
 import unittest
 import requests
+import ssl
 from unittest.mock import patch, Mock
 from app.upload_data import upload_data_gov_lv, upload_zva
 
@@ -27,4 +28,22 @@ class UploadDataTestCase(unittest.TestCase):
         #         headers={'X-CKAN-API-Key': api_key},
         #         files=[('upload', rb)])
 
+        self.assertTrue(mock_post.called)
         self.assertEqual(result, mock_response.json.return_value)
+
+    @patch('ftplib.FTP_TLS', autospec=True)
+    def test_upload_zva(self, mock_ftp_tls_constructor):
+
+        user_name = 'abc'
+        password = '123'
+        ftp_address = 'ftp.example.com'
+        ftp_port = 21
+        file_name = 'antidopinga_vielas.csv'
+
+        upload_zva(user_name=user_name,
+                   password=password,
+                   ftp_address=ftp_address,
+                   ftp_port=ftp_port,
+                   file_name=file_name)
+        
+        mock_ftp_tls_constructor.assert_called_with('ftp.example.com', 21)
