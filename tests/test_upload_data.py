@@ -51,7 +51,7 @@ class UploadDataTestCase(unittest.TestCase):
                    ftp_address=ftp_address,
                    ftp_port=ftp_port,
                    file_name=file_name)
-        
+
         mock_ftp_tls.assert_called_once_with()
         mock_ftp_instance.connect.assert_called_once_with('ftp.example.com', 21)
         mock_ftp_instance.login.assert_called_once_with('abc', '123')
