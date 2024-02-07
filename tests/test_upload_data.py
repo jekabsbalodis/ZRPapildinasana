@@ -1,6 +1,5 @@
 import unittest
 import requests
-import ssl
 from unittest.mock import patch, Mock
 from app.upload_data import upload_data_gov_lv, upload_zva
 
@@ -31,8 +30,15 @@ class UploadDataTestCase(unittest.TestCase):
         self.assertTrue(mock_post.called)
         self.assertEqual(result, mock_response.json.return_value)
 
-    @patch('ftplib.FTP_TLS', autospec=True)
-    def test_upload_zva(self, mock_ftp_tls_constructor):
+    @patch('app.upload_data.FTP_TLS')
+    def test_upload_zva(self, mock_ftp_tls):
+
+        mock_ftp_instance = mock_ftp_tls.return_value
+        mock_ftp_instance.connect.return_value = None
+        mock_ftp_instance.login.return_value = None
+        mock_ftp_instance.prot_p.return_value = None
+        mock_ftp_instance.storbinary.return_value = None
+        mock_ftp_instance.quit.return_value = None
 
         user_name = 'abc'
         password = '123'
@@ -46,4 +52,9 @@ class UploadDataTestCase(unittest.TestCase):
                    ftp_port=ftp_port,
                    file_name=file_name)
         
-        mock_ftp_tls_constructor.assert_called_with('ftp.example.com', 21)
+        mock_ftp_tls.assert_called_once_with()
+        mock_ftp_instance.connect.assert_called_once_with('ftp.example.com', 21)
+        mock_ftp_instance.login.assert_called_once_with('abc', '123')
+        mock_ftp_instance.prot_p.assert_called_once()
+        mock_ftp_instance.storbinary.assert_called_once()
+        mock_ftp_instance.quit.assert_called_once()

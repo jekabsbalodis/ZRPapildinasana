@@ -1,5 +1,5 @@
 '''Upload data to State agency of medicines and data.gov.lv servers'''
-import ftplib
+from ftplib import FTP_TLS
 import requests
 
 
@@ -15,10 +15,10 @@ def upload_data_gov_lv(resource_id, api_key, file_name):
 
 def upload_zva(user_name, password, ftp_address, ftp_port, file_name):
     '''Upload data to State agency of medicines server'''
-    with ftplib.FTP_TLS(ftp_address, ftp_port) as ftps:
-        ftps.login(user_name, password)
-        ftps.prot_p()
-        with open(file_name, 'rb') as file:
-            ftps.storbinary('STOR antidopinga_vielas.csv', file)
-        ftps.quit()
-        return False
+    ftps = FTP_TLS()
+    ftps.connect(ftp_address, ftp_port)
+    ftps.login(user_name, password)
+    ftps.prot_p()
+    with open(file_name, 'rb') as file:
+        ftps.storbinary('STOR antidopinga_vielas.csv', file)
+    ftps.quit()
