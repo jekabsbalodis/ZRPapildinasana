@@ -1,6 +1,6 @@
 import unittest
-import requests
 from datetime import date, timedelta
+import requests
 from app.download_data import download_doping_substances, download_register, download_register_delta
 
 

@@ -1,6 +1,6 @@
 import unittest
-import requests
 from unittest.mock import patch, Mock
+import requests
 from app.upload_data import upload_data_gov_lv, upload_zva
 
 
