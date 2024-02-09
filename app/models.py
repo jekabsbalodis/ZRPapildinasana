@@ -220,11 +220,13 @@ class AddedMedication(db.Model):
         # Open file with newly added medication
         try:
             df_delta = pd.read_xml(delta_file, encoding='utf-8', xpath='meds/med')
+            df_delta.fillna('', inplace=True)
         except ValueError:
             return None
 
         # Open file with drug register
         df_products = pd.read_json(file, encoding='utf-8-sig')
+        df_products.fillna('', inplace=True)
         
         # Loop through newly added medication and write necessary information in database
         for product_delta in df_delta.itertuples():
@@ -310,6 +312,7 @@ class SearchedMedication(db.Model):
 
         # Open file with drug register
         df_products = pd.read_json(file, encoding='utf-8-sig')
+        df_products.fillna('', inplace=True)
 
         # Search the drug register for entries matchin the search term
         df_searched = df_products[ \
@@ -317,9 +320,11 @@ class SearchedMedication(db.Model):
             (df_products['active_substance'].str.contains(search_term, case=False)) | \
             (df_products['authorisation_no'].str.contains(search_term)) \
         ].drop_duplicates(subset=['authorisation_no'])
+        df_searched.fillna('', inplace=True)
 
         # Open file with information on use in sports
         df_doping = pd.read_csv(doping_file)
+        df_doping.fillna('', inplace=True)
 
         # Write information for the searched medication
         for search_result in df_searched.itertuples():
@@ -433,39 +438,40 @@ class NotesFields(db.Model):
 
     @staticmethod
     def update_notes(drug_register, doping_register):
-        '''Function to update the databes'''
-        with open(drug_register, encoding='utf-8') as dr:
-            all_stuff = ET.parse(dr)
-        products = all_stuff.findall('products/product')
-        with open(doping_register, encoding='utf-8', newline='') as dr:
-            reader = csv.reader(dr, dialect='excel', delimiter=',')
-            rows = list(reader)
-            for product in products:
-                authorisation_no = product.findtext('authorisation_no')
-                atc_code = product.findtext('atc_code')
-                if NotesFields.query.filter_by(atcCode=atc_code).first():
-                    continue
-                for row in rows:
-                    if authorisation_no in row:
-                        prohibited_out = row[4]
-                        prohibited_in = row[5]
-                        prohibited_class = row[6]
-                        notes_lv = row[7]
-                        sports_in = row[8]
-                        sports_out = row[9]
-                        notes_en = row[10]
-                        sports_in_en = row[11]
-                        sports_out_en = row[12]
-                        m = NotesFields(atcCode=atc_code,
-                                        prohibitedOUTCompetition=prohibited_out,
-                                        prohibitedINCompetition=prohibited_in,
-                                        prohibitedClass=prohibited_class,
-                                        notesLV=notes_lv,
-                                        sportsINCompetitionLV=sports_in,
-                                        sportsOUTCompetitionLV=sports_out,
-                                        notesEN=notes_en,
-                                        sportsINCompetitionEN=sports_in_en,
-                                        sportsOUTCompetitionEN=sports_out_en)
-                        db.session.add(m)
-                        db.session.commit()
-                        rows.remove(row)
+        '''Function to update the databases'''
+        # Open drug register
+        df_products = pd.read_json(drug_register, encoding='utf-8-sig')
+        df_products.drop_duplicates(subset=['authorisation_no'], ignore_index=True, inplace=True)
+
+        # Open file with information about medication use in sports
+        df_doping = pd.read_csv(doping_register)
+        df_doping.drop(columns=['medicine_name', 'pharmaceutical_form_lv', 'active_substance'], inplace=True)
+
+        # Create dataframe for information for Notes table
+        df_products_columns = ['authorisation_no', 'atc_code']
+        df_notes = df_products.drop(columns=[col for col in df_products if col not in df_products_columns])
+        df_notes = df_notes.join(df_doping.set_index('authorisation_no'), on='authorisation_no')
+        df_notes.drop(columns=['authorisation_no'], inplace=True)
+        df_notes.drop_duplicates(subset=['atc_code'], ignore_index=True, inplace=True)
+        df_notes.dropna(subset=['Aizliegts ārpus sacensībām', 'Aizliegts sacensību laikā'],
+                        axis='index',
+                        inplace=True,
+                        ignore_index=True)
+        df_notes.fillna('', inplace=True)
+        
+        # Write information from dataframe to database
+        for note in df_notes.itertuples():
+            if NotesFields.query.filter_by(atcCode=note[1]).first():
+                continue
+            m = NotesFields(atcCode=note[1],
+                            prohibitedOUTCompetition=note[2],
+                            prohibitedINCompetition=note[3],
+                            prohibitedClass=note[4],
+                            notesLV=note[5],
+                            sportsINCompetitionLV=note[6],
+                            sportsOUTCompetitionLV=note[7],
+                            notesEN=note[8],
+                            sportsINCompetitionEN=note[9],
+                            sportsOUTCompetitionEN=note[10])
+            db.session.add(m)
+            db.session.commit()

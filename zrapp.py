@@ -65,10 +65,9 @@ def scheduled():
     # Schedule task to update Notes Fields table
     from app import models
     from app import download_data
-    download_data.download_doping_substances()
-    download_data.download_register()
     models.NotesFields.update_notes(
-        'HumanProducts.xml', 'antidopinga_vielas.csv')
+        download_data.download_register(),
+        download_data.download_doping_substances())
 
 
 @app.cli.command()
