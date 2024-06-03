@@ -87,15 +87,15 @@ def unchecked():
     # Import register of human medicines
     df_products = pd.read_json(
         download_data.download_register(), encoding='utf-8-sig')
-    df_products.drop_duplicates(
+    df_products.drop_duplicates(  # pylint: disable=E1101
         subset=['authorisation_no'], ignore_index=True, inplace=True)
     df_products_columns = ['medicine_name',
                            'authorisation_no',
                            'pharmaceutical_form_lv',
                            'active_substance']
-    df_products.drop(columns=[
+    df_products.drop(columns=[  # pylint: disable=E1101
                      col for col in df_products if col not in df_products_columns], inplace=True)
-    df_products.fillna('', inplace=True)
+    df_products.fillna('', inplace=True)  # pylint: disable=E1101
 
     # Import file with information with use in sports
     df_doping = pd.read_csv(download_data.download_doping_substances())
@@ -103,7 +103,8 @@ def unchecked():
     # Return dataframe with products that do not have information about use in sports
     matching_rows = df_products[df_products['authorisation_no'].isin(
         df_doping['authorisation_no'])]
-    df_filtered = df_products[~df_products.index.isin(matching_rows.index)]
+    df_filtered = df_products[~df_products.index.isin(  # pylint: disable=E1101
+        matching_rows.index)]
 
     # Write information to csv file
     df_filtered.to_csv('unchecked.csv', index=False)
