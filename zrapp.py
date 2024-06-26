@@ -92,7 +92,8 @@ def unchecked():
     df_products_columns = ['medicine_name',
                            'authorisation_no',
                            'pharmaceutical_form_lv',
-                           'active_substance']
+                           'active_substance',
+                           'date_of_authorisation']
     df_products.drop(columns=[  # pylint: disable=E1101
                      col for col in df_products if col not in df_products_columns], inplace=True)
     df_products.fillna('', inplace=True)  # pylint: disable=E1101
@@ -105,6 +106,12 @@ def unchecked():
         df_doping['authorisation_no'])]
     df_filtered = df_products[~df_products.index.isin(  # pylint: disable=E1101
         matching_rows.index)]
+
+    # Sort information by date of authorisation
+    df_filtered.loc[:, 'date_of_authorisation'] = pd.to_datetime(
+        df_filtered['date_of_authorisation'], format='%d-%b-%y')
+    df_filtered = df_filtered.sort_values(
+        by='date_of_authorisation', ignore_index=True, na_position='first')
 
     # Write information to csv file
     df_filtered.to_csv('unchecked.csv', index=False)
