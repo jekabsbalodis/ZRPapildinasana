@@ -28,6 +28,7 @@ class UploadDataTestCase(unittest.TestCase):
         #         files=[('upload', rb)])
 
         self.assertTrue(mock_post.called)
+        # self.assertEqual(result, (mock_response.json.return_value, mock_response.json.return_value))
         self.assertEqual(result, mock_response.json.return_value)
 
     @patch('app.upload_data.FTP_TLS')
