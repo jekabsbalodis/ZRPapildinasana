@@ -54,3 +54,5 @@ venv
 .lastUpdate
 
 .idx
+
+Pipfile.lock

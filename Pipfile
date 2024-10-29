@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+bootstrap-flask = "*"
+email-validator = "*"
+flask = "*"
+flask-login = "*"
+flask-mail = "*"
+flask-migrate = "*"
+flask-moment = "*"
+flask-sqlalchemy = "*"
+flask-sslify = "*"
+flask-wtf = "*"
+lxml = "*"
+pandas = "*"
+python-dotenv = "*"
+requests = "*"
+coverage = "*"
+
+[dev-packages]
+pylint = "*"
+
+[requires]
+python_version = "3.12"
