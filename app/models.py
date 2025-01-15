@@ -219,7 +219,8 @@ class AddedMedication(db.Model):
 
         # Open file with newly added medication
         try:
-            df_delta = pd.read_xml(delta_file, encoding='utf-8', xpath='meds/med')
+            df_delta = pd.read_xml(
+                delta_file, encoding='utf-8', xpath='meds/med')
             df_delta.fillna('', inplace=True)
         except ValueError:
             return None
@@ -227,7 +228,7 @@ class AddedMedication(db.Model):
         # Open file with drug register
         df_products = pd.read_json(file, encoding='utf-8-sig')
         df_products.fillna('', inplace=True)
-        
+
         # Loop through newly added medication and write necessary information in database
         for product_delta in df_delta.itertuples():
             if product_delta[1] == (df_products.loc[df_products['authorisation_no'] ==
@@ -252,9 +253,9 @@ class AddedMedication(db.Model):
     @staticmethod
     def write_information(file_name):
         '''Function to write information to .csv file'''
-        new_file_name = date.today().strftime('%Y%m%d')+'_'+file_name
+        new_file_name = date.today().strftime('%Y%m%d') + '_' + file_name
         shutil.copyfile(file_name, new_file_name)
-        with open(date.today().strftime('%Y%m%d')+'.csv', 'w', encoding='utf-8', newline='') as f:
+        with open(date.today().strftime('%Y%m%d') + '.csv', 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f, dialect='excel', delimiter=',')
             medications = AddedMedication.query.all()
             for medication in medications:
@@ -275,7 +276,7 @@ class AddedMedication(db.Model):
                                  medication.sportsOUTCompetitionEN])
         with open(new_file_name, 'a', encoding='utf-8', newline='') as f:
             input_lines = fileinput.input(
-                date.today().strftime('%Y%m%d')+'.csv')
+                date.today().strftime('%Y%m%d') + '.csv')
             f.writelines(input_lines)
         df = pd.read_csv(new_file_name)
         df = df.drop_duplicates(subset=['authorisation_no'], keep='last')
@@ -315,10 +316,10 @@ class SearchedMedication(db.Model):
         df_products.fillna('', inplace=True)
 
         # Search the drug register for entries matchin the search term
-        df_searched = df_products[ \
-            (df_products['atc_code'].str.contains(search_term)) | \
-            (df_products['active_substance'].str.contains(search_term, case=False)) | \
-            (df_products['authorisation_no'].str.contains(search_term)) \
+        df_searched = df_products[
+            (df_products['atc_code'].str.contains(search_term)) |
+            (df_products['active_substance'].str.contains(search_term, case=False)) |
+            (df_products['authorisation_no'].str.contains(search_term))
         ].drop_duplicates(subset=['authorisation_no'])
         df_searched.fillna('', inplace=True)
 
@@ -328,11 +329,14 @@ class SearchedMedication(db.Model):
 
         # Write information for the searched medication
         for search_result in df_searched.itertuples():
-            name = search_result[3] # product.findtext('medicine_name')
-            reg_number = search_result[5] # product.findtext('authorisation_no')
-            atc_code = search_result[33] # product.findtext('atc_code')
-            form = search_result[15] # product.findtext('pharmaceutical_form_lv')
-            active_substance = search_result[17] # product.findtext('active_substance')
+            name = search_result[3]  # product.findtext('medicine_name')
+            # product.findtext('authorisation_no')
+            reg_number = search_result[5]
+            atc_code = search_result[33]  # product.findtext('atc_code')
+            # product.findtext('pharmaceutical_form_lv')
+            form = search_result[15]
+            # product.findtext('active_substance')
+            active_substance = search_result[17]
 
             # If searched medication already has information about use in sports, include it
             if not df_doping.loc[df_doping['authorisation_no'] == search_result[5]].empty:
@@ -359,41 +363,41 @@ class SearchedMedication(db.Model):
                                                           search_result[5]].iloc[0]['Prohibited Out-of-Competition in the following sports']
 
                 m = SearchedMedication(name=name,
-                                    regNumber=reg_number,
-                                    atcCode=atc_code,
-                                    form=form,
-                                    activeSubstance=active_substance,
-                                    include=include,
-                                    userChecked=user_checked,
-                                    doping=doping,
-                                    prohibitedOUTCompetition=prohibited_out,
-                                    prohibitedINCompetition=prohibited_in,
-                                    prohibitedClass=prohibited_class,
-                                    notesLV=notes,
-                                    sportsINCompetitionLV=sports_in_competition_lv,
-                                    sportsOUTCompetitionLV=sports_out_competition_lv,
-                                    notesEN=notes_en,
-                                    sportsINCompetitionEN=sports_in_competition_en,
-                                    sportsOUTCompetitionEN=sports_out_competition_en,)
+                                       regNumber=reg_number,
+                                       atcCode=atc_code,
+                                       form=form,
+                                       activeSubstance=active_substance,
+                                       include=include,
+                                       userChecked=user_checked,
+                                       doping=doping,
+                                       prohibitedOUTCompetition=prohibited_out,
+                                       prohibitedINCompetition=prohibited_in,
+                                       prohibitedClass=prohibited_class,
+                                       notesLV=notes,
+                                       sportsINCompetitionLV=sports_in_competition_lv,
+                                       sportsOUTCompetitionLV=sports_out_competition_lv,
+                                       notesEN=notes_en,
+                                       sportsINCompetitionEN=sports_in_competition_en,
+                                       sportsOUTCompetitionEN=sports_out_competition_en,)
                 db.session.add(m)
                 db.session.commit()
 
             # Else write nothing in the table
             else:
                 m = SearchedMedication(name=name,
-                                   regNumber=reg_number,
-                                   atcCode=atc_code,
-                                   form=form,
-                                   activeSubstance=active_substance)
+                                       regNumber=reg_number,
+                                       atcCode=atc_code,
+                                       form=form,
+                                       activeSubstance=active_substance)
                 db.session.add(m)
                 db.session.commit()
 
     @staticmethod
     def write_information(file_name):
         '''Function to write information to .csv file'''
-        new_file_name = date.today().strftime('%Y%m%d')+'_'+file_name
+        new_file_name = date.today().strftime('%Y%m%d') + '_' + file_name
         shutil.copyfile(file_name, new_file_name)
-        with open(date.today().strftime('%Y%m%d')+'.csv', 'w', encoding='utf-8', newline='') as f:
+        with open(date.today().strftime('%Y%m%d') + '.csv', 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f, dialect='excel', delimiter=',')
             medications = SearchedMedication.query.all()
             for medication in medications:
@@ -414,7 +418,7 @@ class SearchedMedication(db.Model):
                                  medication.sportsOUTCompetitionEN])
         with open(new_file_name, 'a', encoding='utf-8', newline='') as f:
             input_lines = fileinput.input(
-                date.today().strftime('%Y%m%d')+'.csv')
+                date.today().strftime('%Y%m%d') + '.csv')
             f.writelines(input_lines)
         df = pd.read_csv(new_file_name)
         df = df.drop_duplicates(subset=['authorisation_no'], keep='last')
@@ -425,7 +429,9 @@ class NotesFields(db.Model):
     '''Model for database with notes about information on medications' use in sports'''
     __tablename__ = 'notes_fields'
     id = db.Column(db.Integer, primary_key=True)
-    atcCode = db.Column(db.String(10), unique=True)
+    uniqueIdentifier = db.Column(db.Text, unique=True)
+    atcCode = db.Column(db.String(10))
+    form = db.Column(db.Text)
     prohibitedOUTCompetition = db.Column(db.String(15))
     prohibitedINCompetition = db.Column(db.String(15))
     prohibitedClass = db.Column(db.String(10))
@@ -441,37 +447,52 @@ class NotesFields(db.Model):
         '''Function to update the databases'''
         # Open drug register
         df_products = pd.read_json(drug_register, encoding='utf-8-sig')
-        df_products.drop_duplicates(subset=['authorisation_no'], ignore_index=True, inplace=True)
+        df_products.drop_duplicates(
+            subset=['authorisation_no'], ignore_index=True, inplace=True)
 
         # Open file with information about medication use in sports
         df_doping = pd.read_csv(doping_register)
-        df_doping.drop(columns=['medicine_name', 'pharmaceutical_form_lv', 'active_substance'], inplace=True)
+        df_doping.drop(columns=[
+                       'medicine_name', 'active_substance'], inplace=True)
 
         # Create dataframe for information for Notes table
         df_products_columns = ['authorisation_no', 'atc_code']
-        df_notes = df_products.drop(columns=[col for col in df_products if col not in df_products_columns])
-        df_notes = df_notes.join(df_doping.set_index('authorisation_no'), on='authorisation_no')
+        df_notes = df_products.drop(
+            columns=[col for col in df_products if col not in df_products_columns])
+        df_notes = df_notes.join(df_doping.set_index(
+            'authorisation_no'), on='authorisation_no')
         df_notes.drop(columns=['authorisation_no'], inplace=True)
-        df_notes.drop_duplicates(subset=['atc_code'], ignore_index=True, inplace=True)
+        df_notes.drop_duplicates(
+            subset=['atc_code', 'pharmaceutical_form_lv'], ignore_index=True, inplace=True)
+
         df_notes.dropna(subset=['Aizliegts ārpus sacensībām', 'Aizliegts sacensību laikā'],
                         axis='index',
                         inplace=True,
                         ignore_index=True)
         df_notes.fillna('', inplace=True)
-        
+
         # Write information from dataframe to database
         for note in df_notes.itertuples():
-            if NotesFields.query.filter_by(atcCode=note[1]).first():
+            if NotesFields.query.filter_by(uniqueIdentifier=f'{note[1]}_{note[2]}').first():
                 continue
-            m = NotesFields(atcCode=note[1],
-                            prohibitedOUTCompetition=note[2],
-                            prohibitedINCompetition=note[3],
-                            prohibitedClass=note[4],
-                            notesLV=note[5],
-                            sportsINCompetitionLV=note[6],
-                            sportsOUTCompetitionLV=note[7],
-                            notesEN=note[8],
-                            sportsINCompetitionEN=note[9],
-                            sportsOUTCompetitionEN=note[10])
+            m = NotesFields(uniqueIdentifier=f'{note[1]}_{note[2]}',
+                            atcCode=note[1],
+                            form=note[2],
+                            prohibitedOUTCompetition=note[3],
+                            prohibitedINCompetition=note[4],
+                            prohibitedClass=note[5],
+                            notesLV=note[6],
+                            sportsINCompetitionLV=note[7],
+                            sportsOUTCompetitionLV=note[8],
+                            notesEN=note[9],
+                            sportsINCompetitionEN=note[10],
+                            sportsOUTCompetitionEN=note[11])
             db.session.add(m)
             db.session.commit()
+
+    @staticmethod
+    def rewrite_notes(drug_register, doping_register):
+        '''Delete all records from notes_fields table'''
+        NotesFields.query.delete()
+        db.session.commit()
+        NotesFields.update_notes(drug_register, doping_register)

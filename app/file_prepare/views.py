@@ -56,11 +56,14 @@ def check_medication():
     form = ReviewMedicationForm()
     medication = AddedMedication.query.filter_by(regNumber=reg_number).first()
     atc_code = medication.atcCode
+    pharmaceutical_form = medication.form
     if medication.regNumber.startswith('EU/'):
         bulk_edit = True
     else:
         bulk_edit = False
-    notes = NotesFields.query.filter_by(atcCode=atc_code).first()
+    notes_by_form = NotesFields.query.filter_by(
+        uniqueIdentifier=f'{atc_code}_{pharmaceutical_form}').first()
+    notes_by_atc = NotesFields.query.filter_by(atcCode=atc_code).first()
     if form.validate_on_submit():
         if form.include.data:
             medication.prohibitedOUTCompetition = form.prohibitedOUTCompetition.data
@@ -102,7 +105,7 @@ def check_medication():
             db.session.commit()
         return redirect(url_for('file_prepare.review_medication', _anchor=medication.regNumber))
     return render_template('file_prepare/check_medication.html',
-                           form=form, medication=medication, notes=notes, bulk_edit=bulk_edit)
+                           form=form, medication=medication, notes_by_form=notes_by_form, notes_by_atc=notes_by_atc, bulk_edit=bulk_edit)
 
 
 @file_prepare.route('/upload_review')
@@ -110,7 +113,7 @@ def check_medication():
 def upload_review():
     '''Function to review the provided information for each medication'''
     AddedMedication.write_information('antidopinga_vielas.csv')
-    with open(date.today().strftime('%Y%m%d')+'.csv', encoding='utf-8') as f:
+    with open(date.today().strftime('%Y%m%d') + '.csv', encoding='utf-8') as f:
         reader = csv.reader(f)
         return render_template('file_prepare/upload_review.html', csv=reader)
 
@@ -126,12 +129,12 @@ def upload_finished():
                    password=current_app.config['ZVA_PASSWORD'],
                    ftp_address=current_app.config['ZVA_FTP_ADDRESS'],
                    ftp_port=int(current_app.config['ZVA_FTP_PORT']),
-                   file_name=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
+                   file_name=date.today().strftime('%Y%m%d') + '_antidopinga_vielas.csv')
         flash('Dati ZVA serverī augšuplādēti')
     if data_gov_lv_form.submitDataGovLV.data and data_gov_lv_form.validate():
         upload_data_gov_lv(resource_id=current_app.config['DATA_GOV_LV_RESOURCE_ID'],
                            api_key=current_app.config['DATA_GOV_LV_API_KEY'],
-                           file_name=date.today().strftime('%Y%m%d')+'_antidopinga_vielas.csv')
+                           file_name=date.today().strftime('%Y%m%d') + '_antidopinga_vielas.csv')
         flash('Dati data.gov.lv serverī augšuplādēti')
     return render_template('med_search/upload_finished.html',
                            zva_form=zva_form,

@@ -71,6 +71,16 @@ def scheduled():
 
 
 @app.cli.command()
+def rewrite_notes():
+    '''Rewrite Notes Fields notes'''
+    from app import models
+    from app import download_data
+    models.NotesFields.rewrite_notes(
+        download_data.download_register(),
+        download_data.download_doping_substances())
+
+
+@app.cli.command()
 def deploy():
     '''Run deployment tasks'''
     # migrate database to the latest version

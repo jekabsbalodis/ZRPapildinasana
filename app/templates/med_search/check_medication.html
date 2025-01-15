@@ -51,54 +51,106 @@
                 </tbody>
             </table>
             <!--  -->
-            {% if notes %}
-            <p class="pt-5 px-5 fst-italic">Šī informācija var palīdzēt ievadīt informāciju par medikamenta lietošanu
-            </p>
+            {% if notes_by_form %}
+            <p class="pt-5 px-5 fst-italic">Šī informācija ir par medikamentu ar tieši tādu pašu ATĶ kodu un zāļu formu</p>
             <table class="table">
                 <tbody>
                     <tr>
                         <td>ATĶ kods:</td>
-                        <td><strong>{{ notes.atcCode }}</strong></td>
+                        <td><strong>{{ notes_by_form.atcCode }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Zāļu forma:</td>
+                        <td><strong>{{ notes_by_form.form }}</strong></td>
                     </tr>
                     <tr>
                         <td>Vai medikaments aizliegts ārpus sacensībām:</td>
-                        <td><strong>{{ notes.prohibitedOUTCompetition }}</strong></td>
+                        <td><strong>{{ notes_by_form.prohibitedOUTCompetition }}</strong></td>
                     </tr>
                     <tr>
                         <td>Vai medikaments ir aizliegts sacensību laikā:</td>
-                        <td><strong>{{ notes.prohibitedINCompetition }}</strong></td>
+                        <td><strong>{{ notes_by_form.prohibitedINCompetition }}</strong></td>
                     </tr>
                     <tr>
                         <td>Kurai Aizliegto vielu un metožu saraksta klasei medikaments pieder:</td>
-                        <td><strong>{{ notes.prohibitedClass }}</strong></td>
+                        <td><strong>{{ notes_by_form.prohibitedClass }}</strong></td>
                     </tr>
                     <tr>
                         <td>Piezīmes par medikamenta lietošanu:</td>
-                        <td><strong>{{ notes.notesLV }}</strong></td>
+                        <td><strong>{{ notes_by_form.notesLV }}</strong></td>
                     </tr>
                     <tr>
                         <td>Piezīmes par medikamenta lietošanu (angliski):</td>
-                        <td><strong>{{ notes.notesEN }}</strong></td>
+                        <td><strong>{{ notes_by_form.notesEN }}</strong></td>
                     </tr>
                     <tr>
                         <td>Sporta veidi, kuros medikaments aizliegts sacensību laikā:</td>
-                        <td><strong>{{ notes.sportsINCompetitionLV }}</strong></td>
+                        <td><strong>{{ notes_by_form.sportsINCompetitionLV }}</strong></td>
                     </tr>
                     <tr>
                         <td>Sporta veidi, kuros medikaments aizliegts sacensību laikā (angliski):</td>
-                        <td><strong>{{ notes.sportsINCompetitionEN }}</strong></td>
+                        <td><strong>{{ notes_by_form.sportsINCompetitionEN }}</strong></td>
                     </tr>
                     <tr>
                         <td>Sporta veidi, kuros medikaments aizliegts ārpus sacensībām:</td>
-                        <td><strong>{{ notes.sportsOUTCompetitionLV }}</strong></td>
+                        <td><strong>{{ notes_by_form.sportsOUTCompetitionLV }}</strong></td>
                     </tr>
                     <tr>
                         <td>Sporta veidi, kuros medikaments aizliegts ārpus sacensībām (angliski):</td>
-                        <td><strong>{{ notes.sportsOUTCompetitionEN }}</strong></td>
+                        <td><strong>{{ notes_by_form.sportsOUTCompetitionEN }}</strong></td>
                     </tr>
                 </tbody>
             </table>
-            <!--  -->
+            {% elif notes_by_atc %}
+            <p class="pt-5 px-5 fst-italic">Šī informācija ir par medikamentu ar tādu pašu ATĶ kodu, bet citā zāļu formā</p>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>ATĶ kods:</td>
+                        <td><strong>{{ notes_by_atc.atcCode }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Zāļu forma:</td>
+                        <td><strong>{{ notes_by_atc.form }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Vai medikaments aizliegts ārpus sacensībām:</td>
+                        <td><strong>{{ notes_by_atc.prohibitedOUTCompetition }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Vai medikaments ir aizliegts sacensību laikā:</td>
+                        <td><strong>{{ notes_by_atc.prohibitedINCompetition }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Kurai Aizliegto vielu un metožu saraksta klasei medikaments pieder:</td>
+                        <td><strong>{{ notes_by_atc.prohibitedClass }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Piezīmes par medikamenta lietošanu:</td>
+                        <td><strong>{{ notes_by_atc.notesLV }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Piezīmes par medikamenta lietošanu (angliski):</td>
+                        <td><strong>{{ notes_by_atc.notesEN }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts sacensību laikā:</td>
+                        <td><strong>{{ notes_by_atc.sportsINCompetitionLV }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts sacensību laikā (angliski):</td>
+                        <td><strong>{{ notes_by_atc.sportsINCompetitionEN }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts ārpus sacensībām:</td>
+                        <td><strong>{{ notes_by_atc.sportsOUTCompetitionLV }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sporta veidi, kuros medikaments aizliegts ārpus sacensībām (angliski):</td>
+                        <td><strong>{{ notes_by_atc.sportsOUTCompetitionEN }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
             {% else %}
             <p class="pt-5 px-5 fst-italic">Par līdzīgiem medikamentiem informācija līdz šim nav pievienota<br>
                 Lūdzu uzmanīgi pārbaudi pievienojamo informāciju</p>
